@@ -138,12 +138,14 @@ CONTAINS
                                                             XLAND, &
                                                               TSK
 
+!
       REAL,     DIMENSION( ims:ime, jms:jme )                    , &
                 INTENT(INOUT)               ::             REGIME, &
                                                               HFX, &
                                                               QFX, &
                                                                LH, &
                                                           MOL,RMOL
+!m the following 5 are change to memory size
 !
       REAL,     DIMENSION( ims:ime, jms:jme )                    , &
                 INTENT(INOUT)   ::                 GZ1OZ0,WSPD,BR, &
@@ -324,12 +326,13 @@ CONTAINS
 
       REAL,     DIMENSION( ims:ime )                             , &
                 INTENT(INOUT)   ::                                 &
-                                                         QSFC,QGH
+                                                              QGH
 
       REAL,     DIMENSION( ims:ime )                             , &
                 INTENT(OUT)     ::                        U10,V10, &
-                                                     TH2,T2,Q2,LH
+                                                TH2,T2,Q2,QSFC,LH
 
+                                    
       REAL,     INTENT(IN   )               ::   CP,G,ROVCP,R,XLV
 
       REAL,     DIMENSION( its:ite ),  INTENT(IN   )   ::      DX

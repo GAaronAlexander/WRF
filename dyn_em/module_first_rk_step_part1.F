@@ -118,7 +118,7 @@ CONTAINS
     INTEGER, INTENT(IN)                           ::  k_start, k_end
     LOGICAL, INTENT(IN), OPTIONAL                 ::  f_flux
 
-    LOGICAL, INTENT(IN), OPTIONAL                 :: restart_flag  
+    LOGICAL, INTENT(IN), OPTIONAL                 :: restart_flag
 
     LOGICAL, INTENT(IN), OPTIONAL :: feedback_is_ready  ! For WRF-CMAQ coupled model, indicates feedback information is available
 
@@ -289,13 +289,13 @@ BENCH_START(rad_driver_tim)
      &        ,WARM_RAIN=grid%warm_rain ,XICE=grid%xice         ,XLAND=grid%xland    &
      &        ,XLAT=grid%xlat          ,XLONG=grid%xlong        ,YR=yr               &
            ! SSiB LSM radiation components (fds 06/2010)
-     &        ,ALSWVISDIR=grid%alswvisdir ,ALSWVISDIF=grid%alswvisdif      &  !ssib 
+     &        ,ALSWVISDIR=grid%alswvisdir ,ALSWVISDIF=grid%alswvisdif      &  !ssib
      &        ,ALSWNIRDIR=grid%alswnirdir ,ALSWNIRDIF=grid%alswnirdif      &  !ssib
      &        ,SWVISDIR=grid%swvisdir ,SWVISDIF=grid%swvisdif              &  !ssib
      &        ,SWNIRDIR=grid%swnirdir ,SWNIRDIF=grid%swnirdif              &  !ssib
      &        ,SF_SURFACE_PHYSICS=config_flags%sf_surface_physics          &  !ssib
 ! WRF-solar and aerosol variables from jararias 2013/8 and 2013/11
-     &       ,SWDDIR=grid%swddir,SWDDNI=grid%swddni,SWDDIF=grid%swddif                              & 
+     &       ,SWDDIR=grid%swddir,SWDDNI=grid%swddni,SWDDIF=grid%swddif                              &
      &       ,SWDDIRC=grid%swddirc, SWDDNIC=grid%swddnic                                            &
      &       ,Gx=grid%Gx,Bx=grid%Bx,gg=grid%gg,bb=grid%bb                                           &
      &       ,swdown_ref=grid%swdown_ref,swddir_ref=grid%swddir_ref                                 &
@@ -327,8 +327,8 @@ BENCH_START(rad_driver_tim)
      &        ,couple_farms=config_flags%couple_farms                     &
 #endif
 ! WRF-Solar EPS: FARMS
-     &       ,multi_perturb=config_flags% multi_perturb                   & 
-     &       ,pert_farms=config_flags%pert_farms                          & 
+     &       ,multi_perturb=config_flags% multi_perturb                   &
+     &       ,pert_farms=config_flags%pert_farms                          &
      &       ,perts_albedo=grid%pert3d(:,:,:,P_PALBEDO)                   &
      &       ,perts_aod=grid%pert3d(:,:,:,P_PAOD)                         &
      &       ,perts_angstrom=grid%pert3d(:,:,:,P_PANGSTROM)               &
@@ -444,7 +444,7 @@ BENCH_START(rad_driver_tim)
      &        ,M_PS_1=grid%m_ps_1, M_PS_2=grid%m_ps_2, AEROSOLC_1=grid%aerosolc_1        &
      &        ,AEROSOLC_2=grid%aerosolc_2, M_HYBI0=grid%m_hybi                      &
      &        ,ABSTOT=grid%abstot, ABSNXT=grid%absnxt, EMSTOT=grid%emstot                &
-     &        ,RADTACTTIME=grid%radtacttime                                         &  
+     &        ,RADTACTTIME=grid%radtacttime                                         &
      &        ,ICLOUD_CU=config_flags%ICLOUD_CU                            &
      &        ,QC_CU=grid%QC_CU , QI_CU=grid%QI_CU                         &
      &        ,CALC_CLEAN_ATM_DIAG=config_flags%calc_clean_atm_diag                  &
@@ -456,29 +456,29 @@ BENCH_START(rad_driver_tim)
      &        ,TAUAER600=grid%tauaer3, TAUAER999=grid%tauaer4 & ! jcb
      &        ,GAER300=grid%gaer1, GAER400=grid%gaer2, GAER600=grid%gaer3, GAER999=grid%gaer4 & ! jcb
      &        ,WAER300=grid%waer1, WAER400=grid%waer2, WAER600=grid%waer3, WAER999=grid%waer4 & ! jcb
-     &        ,TAUAERlw1  =grid%tauaerlw1,  TAUAERlw2=grid%tauaerlw2    & 
-     &        ,TAUAERlw3  =grid%tauaerlw3,  TAUAERlw4=grid%tauaerlw4    & 
-     &        ,TAUAERlw5  =grid%tauaerlw5,  TAUAERlw6=grid%tauaerlw6    & 
-     &        ,TAUAERlw7  =grid%tauaerlw7,  TAUAERlw8=grid%tauaerlw8    & 
-     &        ,TAUAERlw9  =grid%tauaerlw9,  TAUAERlw10=grid%tauaerlw10    & 
-     &        ,TAUAERlw11 =grid%tauaerlw11, TAUAERlw12=grid%tauaerlw12    & 
-     &        ,TAUAERlw13 =grid%tauaerlw13, TAUAERlw14=grid%tauaerlw14    & 
-     &        ,TAUAERlw15 =grid%tauaerlw15, TAUAERlw16=grid%tauaerlw16   & 
+     &        ,TAUAERlw1  =grid%tauaerlw1,  TAUAERlw2=grid%tauaerlw2    &
+     &        ,TAUAERlw3  =grid%tauaerlw3,  TAUAERlw4=grid%tauaerlw4    &
+     &        ,TAUAERlw5  =grid%tauaerlw5,  TAUAERlw6=grid%tauaerlw6    &
+     &        ,TAUAERlw7  =grid%tauaerlw7,  TAUAERlw8=grid%tauaerlw8    &
+     &        ,TAUAERlw9  =grid%tauaerlw9,  TAUAERlw10=grid%tauaerlw10    &
+     &        ,TAUAERlw11 =grid%tauaerlw11, TAUAERlw12=grid%tauaerlw12    &
+     &        ,TAUAERlw13 =grid%tauaerlw13, TAUAERlw14=grid%tauaerlw14    &
+     &        ,TAUAERlw15 =grid%tauaerlw15, TAUAERlw16=grid%tauaerlw16   &
      &        ,progn=config_flags%progn                                            &
 #endif
      &         ,slope_rad=config_flags%slope_rad,topo_shading=config_flags%topo_shading     &
      &         ,shadowmask=grid%shadowmask,ghg_input=config_flags%ghg_input   &
-     &         ,ht=grid%ht,dx=grid%dx,dy=grid%dy,dx2d=grid%dx2d,area2d=grid%area2d &           
-     &         ,diffuse_frac=grid%diffuse_frac &  
+     &         ,ht=grid%ht,dx=grid%dx,dy=grid%dy,dx2d=grid%dx2d,area2d=grid%area2d &
+     &         ,diffuse_frac=grid%diffuse_frac &
      &         ,obscur=grid%ECOBSC, mask=grid%ECMASK                       &
      &         ,elat_track=grid%elat_track,elon_track=grid%elon_track      &
-     &         ,SW_ECLIPSE=config_flags%ra_sw_eclipse                      &         
+     &         ,SW_ECLIPSE=config_flags%ra_sw_eclipse                      &
      &         ,IS_CAMMGMP_USED = grid%is_CAMMGMP_used    &
      &         ,cw_rad=grid%cw_rad                     &
      &         ,shcu_physics=config_flags%shcu_physics                     &
      &         ,MP_PHYSICS=CONFIG_FLAGS%MP_PHYSICS        &
      &         ,EFCG=grid%EFCG,EFCS=grid%EFCS,EFIG=grid%EFIG &
-     &         ,EFIS=grid%EFIS,EFSG=grid%EFSG,aercu_opt=config_flags%aercu_opt & 
+     &         ,EFIS=grid%EFIS,EFSG=grid%EFSG,aercu_opt=config_flags%aercu_opt &
      &         ,EFSS=grid%EFSS,QS_CU=grid%QS_CU &
      &         ,feedback_is_ready=feedback_is_ready   &
 #if ( WRF_CMAQ == 1)
@@ -569,7 +569,7 @@ BENCH_START(surf_driver_tim)
       endif
 
 !  Ensure WRF_Chem is compiled if bio_emiss_opt is tested, and add flag to read MEGANv2.1
-!  file if bio_emiss_opt is set properly (even if chem_opt == 0).  
+!  file if bio_emiss_opt is set properly (even if chem_opt == 0).
 !  Also explicitly set do_bioe to .false. if chem_opt <= 0.   BJG 3/28/19
 #if( WRF_USE_CLM == 1) && (WRF_CHEM == 1)
       if( config_flags%bio_emiss_opt == MEGAN2_CLM ) then
@@ -621,18 +621,18 @@ BENCH_START(surf_driver_tim)
 #endif
               ,IFNDSNOWSI=grid%ifndsnowsi, DO_BIOE=do_bioe, DO_MEGANFILE=do_meganfile          &
      &        ,ISLTYP=grid%isltyp      ,ITIMESTEP=grid%itimestep, JULIAN_IN=grid%julian                  &
-     &        ,IRRIGATION=grid%irrigation,SF_SURF_IRR_SCHEME=config_flags%sf_surf_irr_scheme  & 
-     &        ,IRR_DAILY_AMOUNT=config_flags%irr_daily_amount                                                & 
+     &        ,IRRIGATION=grid%irrigation,SF_SURF_IRR_SCHEME=config_flags%sf_surf_irr_scheme  &
+     &        ,IRR_DAILY_AMOUNT=config_flags%irr_daily_amount                                                &
      &        ,IRR_START_HOUR=config_flags%irr_start_hour,IRR_NUM_HOURS=config_flags%irr_num_hours           &
      &        ,IRR_START_JULIANDAY=config_flags%irr_start_julianday                                          &
      &        ,IRR_END_JULIANDAY=config_flags%irr_end_julianday                                              &
-     &        ,IRR_FREQ=config_flags%irr_freq,IRR_PH=config_flags%irr_ph,IRR_RAND_FIELD=grid%irr_rand_field  & 
+     &        ,IRR_FREQ=config_flags%irr_freq,IRR_PH=config_flags%irr_ph,IRR_RAND_FIELD=grid%irr_rand_field  &
      &        ,IVGTYP=grid%ivgtyp      ,LH=grid%lh              ,LOWLYR=grid%lowlyr      &
      &        ,MAVAIL=grid%mavail      ,NUM_SOIL_LAYERS=config_flags%num_soil_layers        &
      &        ,P8W=grid%p_hyd_w            ,PBLH=grid%pblh          ,PI_PHY=pi_phy      &
      &        ,PSFC=grid%psfc          ,PSHLTR=grid%pshltr      ,PSIH=psih          &
      &        ,BLDT=grid%bldt     ,CURR_SECS=curr_secs, ADAPT_STEP_FLAG=adapt_step_flag  &
-     &        ,BLDTACTTIME=grid%bldtacttime                                              & 
+     &        ,BLDTACTTIME=grid%bldtacttime                                              &
      &        ,PSIM=psim          ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &
      &        ,Q2=grid%q2              ,QFX=grid%qfx            ,QSFC=grid%qsfc          &
      &        ,QSHLTR=grid%qshltr      ,QZ0=grid%qz0            ,RAINCV=grid%raincv      &
@@ -681,20 +681,20 @@ BENCH_START(surf_driver_tim)
      &        ,TMOML=grid%TMOML,ISWATER=iswater                                     &
      &        ,OML_RELAXATION_TIME=grid%OML_RELAXATION_TIME                         &
      &        ,shalwater_z0=config_flags%shalwater_z0                               &
-     &        ,water_depth=grid%water_depth                                         & 
-     &        ,shalwater_depth=config_flags%shalwater_depth                         & 
-     &        ,lakedepth2d=grid%lakedepth2d,    savedtke12d=grid%savedtke12d        &   
+     &        ,water_depth=grid%water_depth                                         &
+     &        ,shalwater_depth=config_flags%shalwater_depth                         &
+     &        ,lakedepth2d=grid%lakedepth2d,    savedtke12d=grid%savedtke12d        &
      &        ,snowdp2d=grid%snowdp2d,          h2osno2d=grid%h2osno2d              & !lake
-     &        ,snl2d=grid%snl2d,                t_grnd2d=grid%t_grnd2d              &   
-     &        ,t_lake3d=grid%t_lake3d,          lake_icefrac3d=grid%lake_icefrac3d  & !lake  
-     &        ,z_lake3d=grid%z_lake3d,          dz_lake3d=grid%dz_lake3d            &   
+     &        ,snl2d=grid%snl2d,                t_grnd2d=grid%t_grnd2d              &
+     &        ,t_lake3d=grid%t_lake3d,          lake_icefrac3d=grid%lake_icefrac3d  & !lake
+     &        ,z_lake3d=grid%z_lake3d,          dz_lake3d=grid%dz_lake3d            &
      &        ,t_soisno3d=grid%t_soisno3d,      h2osoi_ice3d=grid%h2osoi_ice3d      & !lake
-     &        ,h2osoi_liq3d=grid%h2osoi_liq3d,  h2osoi_vol3d=grid%h2osoi_vol3d      &   
+     &        ,h2osoi_liq3d=grid%h2osoi_liq3d,  h2osoi_vol3d=grid%h2osoi_vol3d      &
      &        ,z3d=grid%z3d,                    dz3d=grid%dz3d                      & !lake
-     &        ,zi3d=grid%zi3d,                  watsat3d=grid%watsat3d              &   
-     &        ,csol3d=grid%csol3d,              tkmg3d=grid%tkmg3d                  & !lake     
-     &        ,tkdry3d=grid%tkdry3d,            tksatu3d=grid%tksatu3d              &   
-     &        ,LakeModel=grid%sf_lake_physics,  lake_min_elev=grid%lake_min_elev    & !lake  
+     &        ,zi3d=grid%zi3d,                  watsat3d=grid%watsat3d              &
+     &        ,csol3d=grid%csol3d,              tkmg3d=grid%tkmg3d                  & !lake
+     &        ,tkdry3d=grid%tkdry3d,            tksatu3d=grid%tksatu3d              &
+     &        ,LakeModel=grid%sf_lake_physics,  lake_min_elev=grid%lake_min_elev    & !lake
 #if ( EM_CORE == 1)
      &        ,LakeMask=grid%LakeMask                                               & !lake
      &        ,restart_flag=restart_flag                                            & !flag showing if is a restart timestep
@@ -731,7 +731,7 @@ BENCH_START(surf_driver_tim)
      &         T_SOISNO4=grid%t_soisno4,T_SOISNO5=grid%t_soisno5,                   &
      &         T_SOISNO6=grid%t_soisno6,T_SOISNO7=grid%t_soisno7,                   &
      &         T_SOISNO8=grid%t_soisno8,T_SOISNO9=grid%t_soisno9,                   &
-     &         T_SOISNO10=grid%t_soisno10,DZSNOW1=grid%dzsnow1,DZSNOW2=grid%dzsnow2,& 
+     &         T_SOISNO10=grid%t_soisno10,DZSNOW1=grid%dzsnow1,DZSNOW2=grid%dzsnow2,&
      &         DZSNOW3=grid%dzsnow3,DZSNOW4=grid%dzsnow4, DZSNOW5=grid%dzsnow5,     &
      &         SNOWRDS1=grid%snowrds1,SNOWRDS2=grid%snowrds2,                       &
      &         SNOWRDS3=grid%snowrds3 ,SNOWRDS4=grid%snowrds4,                      &
@@ -845,7 +845,7 @@ BENCH_START(surf_driver_tim)
      &        ,LP_URB2D=grid%lp_urb2d,HI_URB2D=grid%hi_urb2d              & !multi-layer urban
      &        ,LB_URB2D=grid%lb_urb2d,HGT_URB2D=grid%hgt_urb2d            & !multi-layer urban
      &        ,MH_URB2D=grid%mh_urb2d,STDH_URB2D=grid%stdh_urb2d          & !SLUCM
-     &        ,LF_URB2D=grid%lf_urb2d                                           & 
+     &        ,LF_URB2D=grid%lf_urb2d                                           &
      &        ,GMT=grid%gmt,XLAT=grid%xlat,XLONG=grid%xlong,JULDAY=grid%julday  &
      &        ,A_U_BEP=grid%a_u_bep,A_V_BEP=grid%a_v_bep,A_T_BEP=grid%a_t_bep   &
      &        ,A_Q_BEP=grid%a_q_bep                                             &
@@ -871,7 +871,7 @@ BENCH_START(surf_driver_tim)
      &        ,alswvisdir=grid%alswvisdir, alswvisdif=grid%alswvisdif    & !ssib
      &        ,alswnirdir=grid%alswnirdir, alswnirdif=grid%alswnirdif    & !ssib
      &        ,swvisdir=grid%swvisdir, swvisdif=grid%swvisdif            & !ssib
-     &        ,swnirdir=grid%swnirdir, swnirdif=grid%swnirdif            & !ssib 
+     &        ,swnirdir=grid%swnirdir, swnirdif=grid%swnirdif            & !ssib
      &        ,ssib_br=grid%ssib_br,  ssib_fm=grid%ssib_fm               & !ssib
      &        ,ssib_fh=grid%ssib_fh,  ssib_cm=grid%ssib_cm               & !ssib
      &        ,ssibxdd=grid%ssibxdd,  ssib_lhf=grid%ssib_lhf             & !ssib
@@ -919,12 +919,13 @@ BENCH_START(surf_driver_tim)
      &        ,iopt_sfc=config_flags%opt_sfc,   iopt_frz=config_flags%opt_frz &
      &        ,iopt_inf=config_flags%opt_inf,   iopt_rad=config_flags%opt_rad &
      &        ,iopt_alb=config_flags%opt_alb,   iopt_snf=config_flags%opt_snf &
-     &        ,iopt_tbot=config_flags%opt_tbot, iopt_stc=config_flags%opt_stc & 
-     &        ,iopt_gla=config_flags%opt_gla,   iopt_rsf=config_flags%opt_rsf & 
+     &        ,iopt_tbot=config_flags%opt_tbot, iopt_stc=config_flags%opt_stc &
+     &        ,iopt_gla=config_flags%opt_gla,   iopt_rsf=config_flags%opt_rsf &
      &        ,iopt_soil=config_flags%opt_soil, iopt_pedo=config_flags%opt_pedo  &
      &        ,iopt_crop=config_flags%opt_crop, iopt_irr=config_flags%opt_irr    &
      &        ,iopt_irrm=config_flags%opt_irrm                                   &
      &        ,iopt_infdv=config_flags%opt_infdv,iopt_tdrn=config_flags%opt_tdrn &
+     &        ,iopt_hue=config_flags%opt_hue, iopt_mos=config_flags%opt_mos      & ! aaron a.
      &        ,soiltstep=config_flags%soiltstep
      &        , isnowxy=grid%isnowxy  ,    tvxy=grid%tvxy    ,    tgxy=grid%tgxy     &
      &        ,canicexy=grid%canicexy ,canliqxy=grid%canliqxy,   eahxy=grid%eahxy    &
@@ -944,7 +945,7 @@ BENCH_START(surf_driver_tim)
      &        , soilcl3=grid%soilcl3  , soilcl4=grid%soilcl4                         &
      &        ,  xsaixy=grid%xsaixy   , taussxy=grid%taussxy                         &
      &        ,  t2mvxy=grid%t2mvxy   ,  t2mbxy=grid%t2mbxy                          &
-     &        ,  q2mvxy=grid%q2mvxy   ,  q2mbxy=grid%q2mbxy                          & 
+     &        ,  q2mvxy=grid%q2mvxy   ,  q2mbxy=grid%q2mbxy                          &
      &        ,  tradxy=grid%tradxy   ,   neexy=grid%neexy   ,   gppxy=grid%gppxy    &
      &        ,   nppxy=grid%nppxy    ,  fvegxy=grid%fvegxy  , runsfxy=grid%runsfxy  &
      &        , runsbxy=grid%runsbxy  ,  ecanxy=grid%ecanxy  ,  edirxy=grid%edirxy   &
@@ -957,7 +958,7 @@ BENCH_START(surf_driver_tim)
      &        ,   evgxy=grid%evgxy    ,   evbxy=grid%evbxy   ,   ghvxy=grid%ghvxy    &
      &        ,   ghbxy=grid%ghbxy    ,   irgxy=grid%irgxy   ,   ircxy=grid%ircxy    &
      &        ,   irbxy=grid%irbxy    ,    trxy=grid%trxy    ,   evcxy=grid%evcxy    &
-     &        ,chleafxy=grid%chleafxy ,  chucxy=grid%chucxy                          &                       
+     &        ,chleafxy=grid%chleafxy ,  chucxy=grid%chucxy                          &
      &        ,  chv2xy=grid%chv2xy   ,  chb2xy=grid%chb2xy , chstarxy=grid%chstarxy &
 ! Noah-MP extra output fields
      &        ,    qintsxy=grid%qintsxy    ,   qintrxy=grid%qintrxy   ,   qdripsxy=grid%qdripsxy   &
@@ -980,7 +981,7 @@ BENCH_START(surf_driver_tim)
      &        , FIFRACT=grid%FIFRACT  , IRNUMSI=grid%IRNUMSI ,IRNUMMI=grid%IRNUMMI   &
      &        , IRNUMFI=grid%IRNUMFI  , IRWATSI=grid%IRWATSI ,IRWATMI=grid%IRWATMI   &
      &        , IRWATFI=grid%IRWATFI  , IRELOSS=grid%IRELOSS ,IRSIVOL=grid%IRSIVOL   &
-     &        , IRMIVOL=grid%IRMIVOL  , IRFIVOL=grid%IRFIVOL ,IRRSPLH=grid%IRRSPLH   &                       
+     &        , IRMIVOL=grid%IRMIVOL  , IRFIVOL=grid%IRFIVOL ,IRRSPLH=grid%IRRSPLH   &
 ! Noah-MP tile drainage
      &        , QTDRAIN=grid%QTDRAIN  , TD_FRACTION=grid%TD_FRACTION                 &
 ! Optional hydro variables in NOAHMP
@@ -1043,7 +1044,8 @@ BENCH_START(surf_driver_tim)
      &        ,OM_LAT=grid%om_lat                                                  & !cy:3DPWP
      &        , okms = 1, okme=config_flags%ocean_levels                  & ! cyl:3DPWP
      &        ,rdx=grid%rdx, rdy=grid%rdy,msfu=grid%msfu,msfv=grid%msfv,msft=grid%msft &!cyl: 3DPWP
-     &        ,XTIME=grid%xtime,OM_TINI=grid%om_tini,OM_SINI=grid%om_sini,id=grid%id,omdt=config_flags%omdt &!cyl: 3DPWP 
+     &        ,XTIME=grid%xtime,OM_TINI=grid%om_tini,OM_SINI=grid%om_sini,id=grid%id,omdt=config_flags%omdt &!cyl: 3DPWP
+     !Dan Li Mosaic
      &        ,sf_surface_mosaic=config_flags%sf_surface_mosaic,  mosaic_cat=config_flags%mosaic_cat    &
      &        ,mosaic_cat_index=grid%mosaic_cat_index                                                   &  !danli mosaic
      &        ,landusef2=grid%landusef2,TSK_mosaic=grid%TSK_mosaic,QSFC_mosaic=grid%QSFC_mosaic         &
@@ -1056,16 +1058,83 @@ BENCH_START(surf_driver_tim)
      &        ,HFX_mosaic=grid%HFX_mosaic,QFX_mosaic=grid%QFX_mosaic, LH_mosaic=grid%LH_mosaic          &
      &        ,GRDFLX_mosaic=grid%GRDFLX_mosaic,SNOTIME_mosaic=grid%SNOTIME_mosaic                      &  !danli mosaic
      &        ,RS_mosaic=grid%RS_mosaic,LAI_mosaic=grid%LAI_mosaic                                      &
-     &        ,TR_URB2D_mosaic=grid%TR_URB2D_mosaic,TB_URB2D_mosaic=grid%TB_URB2D_mosaic                &  !danli mosaic 
-     &        ,TG_URB2D_mosaic=grid%TG_URB2D_mosaic,TC_URB2D_mosaic=grid%TC_URB2D_mosaic                &  !danli mosaic 
+     &        ,TR_URB2D_mosaic=grid%TR_URB2D_mosaic,TB_URB2D_mosaic=grid%TB_URB2D_mosaic                &  !danli mosaic
+     &        ,TG_URB2D_mosaic=grid%TG_URB2D_mosaic,TC_URB2D_mosaic=grid%TC_URB2D_mosaic                &  !danli mosaic
      &        ,QC_URB2D_mosaic=grid%QC_URB2D_mosaic,UC_URB2D_mosaic=grid%UC_URB2D_mosaic                &  !danli mosaic
-     &        ,TRL_URB3D_mosaic=grid%TRL_URB3D_mosaic,TBL_URB3D_mosaic=grid%TBL_URB3D_mosaic            &  !danli mosaic 
-     &        ,TGL_URB3D_mosaic=grid%TGL_URB3D_mosaic                                                   &  !danli mosaic 
-     &        ,SH_URB2D_mosaic=grid%SH_URB2D_mosaic,LH_URB2D_mosaic=grid%LH_URB2D_mosaic                &  !danli mosaic 
-     &        ,G_URB2D_mosaic=grid%G_URB2D_mosaic,RN_URB2D_mosaic=grid%RN_URB2D_mosaic                  &  !danli mosaic 
-     &        ,TS_URB2D_mosaic=grid%TS_URB2D_mosaic                                                     &  !danli mosaic 
+     &        ,TRL_URB3D_mosaic=grid%TRL_URB3D_mosaic,TBL_URB3D_mosaic=grid%TBL_URB3D_mosaic            &  !danli mosaic
+     &        ,TGL_URB3D_mosaic=grid%TGL_URB3D_mosaic                                                   &  !danli mosaic
+     &        ,SH_URB2D_mosaic=grid%SH_URB2D_mosaic,LH_URB2D_mosaic=grid%LH_URB2D_mosaic                &  !danli mosaic
+     &        ,G_URB2D_mosaic=grid%G_URB2D_mosaic,RN_URB2D_mosaic=grid%RN_URB2D_mosaic                  &  !danli mosaic
+     &        ,TS_URB2D_mosaic=grid%TS_URB2D_mosaic                                                     &  !danli mosaic
      &        ,TS_RUL2D_mosaic=grid%TS_RUL2D_mosaic                                                     &  !danli mosaic
      &        ,ZOL=grid%ZOL                                                                             &
+     ! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Noah-MP Mosaic Aaron A.
+     &        , SFCRUNOFF_mosaic=grid%SFCRUNOFF_mosaic , UDRUNOFF_mosaic=grid%UDRUNOFF_mosaic           &
+     &        , ACSNOM_mosaic=grid%ACSNOM_mosaic , ACSNOW_mosaic=grid%ACSNOW_mosaic                     &
+     &        , isnowxy_mosaic=grid%isnowxy_mosaic  ,    tvxy_mosaic=grid%tvxy_mosaic    ,    tgxy_mosaic=grid%tgxy_mosaic     &
+     &        ,canicexy_mosaic=grid%canicexy_mosaic ,canliqxy_mosaic=grid%canliqxy_mosaic,   eahxy_mosaic=grid%eahxy_mosaic    &
+     &        ,   tahxy_mosaic=grid%tahxy_mosaic    ,    cmxy_mosaic=grid%cmxy_mosaic    ,    chxy_mosaic=grid%chxy_mosaic     &
+     &        ,  fwetxy_mosaic=grid%fwetxy_mosaic   ,sneqvoxy_mosaic=grid%sneqvoxy_mosaic,alboldxy_mosaic=grid%alboldxy_mosaic &
+     &        , qsnowxy_mosaic=grid%qsnowxy_mosaic  ,qrainxy_mosaic=grid%qrainxy_mosaic  ,wslakexy_mosaic=grid%wslakexy_mosaic &
+     &        , zwtxy_mosaic=grid%zwtxy_mosaic                                                     &
+     &        ,    waxy_mosaic=grid%waxy_mosaic     ,    wtxy_mosaic=grid%wtxy_mosaic    ,  tsnoxy_mosaic=grid%tsnoxy_mosaic   &
+     &        , zsnsoxy_mosaic=grid%zsnsoxy_mosaic  , snicexy_mosaic=grid%snicexy_mosaic , snliqxy_mosaic=grid%snliqxy_mosaic  &
+     &        ,lfmassxy_mosaic=grid%lfmassxy_mosaic ,rtmassxy_mosaic=grid%rtmassxy_mosaic,stmassxy_mosaic=grid%stmassxy_mosaic &
+     &        ,  woodxy_mosaic=grid%woodxy_mosaic   ,stblcpxy_mosaic=grid%stblcpxy_mosaic,fastcpxy_mosaic=grid%fastcpxy_mosaic &
+     &        ,  xsaixy_mosaic=grid%xsaixy_mosaic   , taussxy_mosaic=grid%taussxy_mosaic                         &
+     &        ,  t2mvxy_mosaic=grid%t2mvxy_mosaic   ,  t2mbxy_mosaic=grid%t2mbxy_mosaic                          &
+     &        ,  q2mvxy_mosaic=grid%q2mvxy_mosaic   ,  q2mbxy_mosaic=grid%q2mbxy_mosaic                          &
+     &        ,  tradxy_mosaic=grid%tradxy_mosaic   ,   neexy_mosaic=grid%neexy_mosaic   ,   gppxy_mosaic=grid%gppxy_mosaic    &
+     &        ,   nppxy_mosaic=grid%nppxy_mosaic    ,  fvegxy_mosaic=grid%fvegxy_mosaic  , runsfxy_mosaic=grid%runsfxy_mosaic  &
+     &        , runsbxy_mosaic=grid%runsbxy_mosaic  ,  ecanxy_mosaic=grid%ecanxy_mosaic  ,  edirxy_mosaic=grid%edirxy_mosaic   &
+     &        , etranxy_mosaic=grid%etranxy_mosaic  ,   fsaxy_mosaic=grid%fsaxy_mosaic   ,  firaxy_mosaic=grid%firaxy_mosaic   &
+     &        ,  aparxy_mosaic=grid%aparxy_mosaic   ,   psnxy_mosaic=grid%psnxy_mosaic   ,   savxy_mosaic=grid%savxy_mosaic    &
+     &        ,   sagxy_mosaic=grid%sagxy_mosaic    , rssunxy_mosaic=grid%rssunxy_mosaic , rsshaxy_mosaic=grid%rsshaxy_mosaic  &
+     &        ,  bgapxy_mosaic=grid%bgapxy_mosaic   ,  wgapxy_mosaic=grid%wgapxy_mosaic  ,   tgvxy_mosaic=grid%tgvxy_mosaic    &
+     &        ,   tgbxy_mosaic=grid%tgbxy_mosaic    ,   chvxy_mosaic=grid%chvxy_mosaic   ,   chbxy_mosaic=grid%chbxy_mosaic    &
+     &        ,   shgxy_mosaic=grid%shgxy_mosaic    ,   shcxy_mosaic=grid%shcxy_mosaic   ,   shbxy_mosaic=grid%shbxy_mosaic    &
+     &        ,   evgxy_mosaic=grid%evgxy_mosaic    ,   evbxy_mosaic=grid%evbxy_mosaic   ,   ghvxy_mosaic=grid%ghvxy_mosaic    &
+     &        ,   ghbxy_mosaic=grid%ghbxy_mosaic    ,   irgxy_mosaic=grid%irgxy_mosaic   ,   ircxy_mosaic=grid%ircxy_mosaic    &
+     &        ,   irbxy_mosaic=grid%irbxy_mosaic    ,    trxy_mosaic=grid%trxy_mosaic    ,   evcxy_mosaic=grid%evcxy_mosaic    &
+     &        ,chleafxy_mosaic=grid%chleafxy_mosaic ,  chucxy_mosaic=grid%chucxy_mosaic                          &
+     &        ,  chv2xy_mosaic=grid%chv2xy_mosaic   ,  chb2xy_mosaic=grid%chb2xy_mosaic , chstarxy_mosaic=grid%chstarxy_mosaic &
+! Noah-MP extra output fields
+     &        ,    qintsxy_mosaic=grid%qintsxy_mosaic    ,   qintrxy_mosaic=grid%qintrxy   ,   qdripsxy_mosaic=grid%qdripsxy_mosaic   &
+     &        ,   qdriprxy_mosaic=grid%qdriprxy_mosaic   ,  qthrosxy_mosaic=grid%qthrosxy_mosaic  ,   qthrorxy_mosaic=grid%qthrorxy_mosaic   &
+     &        ,   qsnsubxy_mosaic=grid%qsnsubxy_mosaic   ,  qsnfroxy_mosaic=grid%qsnfroxy_mosaic  ,    qsubcxy_mosaic=grid%qsubcxy_mosaic    &
+     &        ,    qfrocxy_mosaic=grid%qfrocxy_mosaic    ,   qfrzcxy_mosaic=grid%qfrzcxy_mosaic   ,   qmeltcxy_mosaic=grid%qmeltcxy_mosaic   &
+     &        ,   qsnbotxy_mosaic=grid%qsnbotxy_mosaic   , pondingxy_mosaic=grid%pondingxy_mosaic ,      PAHXY_mosaic=grid%PAHXY_mosaic      &
+     &        ,     PAHGXY_mosaic=grid%PAHGXY_mosaic     ,    PAHVXY_mosaic=grid%PAHVXY_mosaic    ,     PAHBXY_mosaic=grid%PAHBXY_mosaic     &
+     &        ,    qmeltxy_mosaic=grid%qmeltxy_mosaic    ,   FPICEXY_mosaic=grid%FPICEXY_mosaic   ,   qevacxy_mosaic=grid%qevacxy_mosaic     &
+     &        ,    qdewcxy_mosaic=grid%qdewcxy_mosaic     &
+     &        ,  acc_ssoilxy_mosaic=grid%acc_ssoil_mosaic  ,acc_qinsurxy_mosaic=grid%acc_qinsur_mosaic,  acc_qsevaxy_mosaic=grid%acc_qseva_mosaic  &
+     &        , acc_etranixy_mosaic=grid%acc_etrani_mosaic ,   eflxbxy_mosaic=grid%eflxbxy_mosaic                                &
+     &        , soilenergy_mosaic=grid%soilenergy_mosaic ,snowenergy_mosaic=grid%snowenergy_mosaic,    canhsxy_mosaic=grid%canhsxy_mosaic    &
+     &        , ACC_DWATERXY_mosaic=grid%ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic=grid%ACC_PRCPXY_mosaic,ACC_ECANXY_mosaic=grid%ACC_ECANXY_mosaic &
+     &        , ACC_ETRANXY_mosaic=grid%ACC_ETRANXY_mosaic, ACC_EDIRXY_mosaic=grid%ACC_EDIRXY_mosaic  &
+! Noah-MP irrigation
+     &        , IRNUMSI_mosaic=grid%IRNUMSI_mosaic ,IRNUMMI_mosaic=grid%IRNUMMI_mosaic   &
+     &        , IRNUMFI_mosaic=grid%IRNUMFI_mosaic  , IRWATSI_mosaic=grid%IRWATSI_mosaic ,IRWATMI_mosaic=grid%IRWATMI_mosaic   &
+     &        , IRWATFI_mosaic=grid%IRWATFI_mosaic  , IRELOSS_mosaic=grid%IRELOSS_mosaic ,IRSIVOL_mosaic=grid%IRSIVOL_mosaic   &
+     &        , IRMIVOL_mosaic=grid%IRMIVOL_mosaic  , IRFIVOL_mosaic=grid%IRFIVOL_mosaic ,IRRSPLH_mosaic=grid%IRRSPLH_mosaic   &
+     ! Optional hydro variables in NOAHMP (Theoretically works with TOPMODEL groundwater. Unsure though)
+     &        , smcwtdxy_mosaic=grid%smcwtdxy_mosaic ,rechxy_mosaic=grid%rechxy_mosaic ,deeprechxy_mosaic=grid%deeprechxy_mosaic &
+     &        , smoiseq_mosaic=grid%smoiseq_mosaic  &
+! Noah-MP Urban for mosaic restart
+     &        , TGRL_URB3D_mosaic=grid%TGRL_URB3D_mosaic, SMR_URB3D_mosaic=grid%SMR_URB3D_mosaic, CMR_SFCDIF_mosaic=grid%CMR_SFCDIF_mosaic         &
+     &        , CHR_SFCDIF_mosaic=grid%CHR_SFCDIF_mosaic, CMC_SFCDIF_mosaic=grid%CMC_SFCDIF_mosaic, CHC_SFCDIF_mosaic=grid%CHC_SFCDIF_mosaic         &
+     &        , CMGR_SFCDIF_mosaic=grid%CMGR_SFCDIF_mosaic, CHGR_SFCDIF_mosaic=grid%CHGR_SFCDIF_mosaic, XXXR_URB2D_mosaic=grid%XXXR_URB2D_mosaic      &
+     &        , XXXB_URB2D_mosaic=grid%XXXB_URB2D_mosaic, XXXG_URB2D_mosaic=grid%XXXG_URB2D_mosaic &
+     &        , XXXC_URB2D_mosaic=grid%XXXC_URB2D_mosaic, CMCR_URB2D_mosaic=grid%CMCR_URB2D_mosaic       &
+     &        , TGR_URB2D_mosaic=grid%TGR_URB2D_mosaic, DRELR_URB2D_mosaic=grid%DRELR_URB2D_mosaic, DRELB_URB2D_mosaic=grid%DRELB_URB2D_mosaic       &
+     &        , DRELG_URB2D_mosaic=grid%DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic=grid%FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic=grid%FLXHUMB_URB2D_mosaic       &
+     &        , FLXHUMG_URB2D_mosaic=grid%FLXHUMG_URB2D_mosaic &
+
+! Noah-MP HUE optional variables
+     &        , runonsfxy=grid%runonsfxy, runonsfxy_mosaic=grid%runonsfxy_mosaic, DETENTION_STORAGEXY=grid%DETENTION_STORAGEXY    &
+     &        , DETENTION_STORAGEXY_mosaic=grid%DETENTION_STORAGEXY_mosaic, VOL_FLUX_RUNONXY_mosaic=grid%VOL_FLUX_RUNONXY_mosaic  &
+     &        , VOL_FLUX_SMXY_mosaic=grid%VOL_FLUX_SMXY_mosaic           &
+! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END NOAH-MP Mosaic and HUE ~~~~~~~~~~~~~~~~~~~
      &        ,SDA_HFX=grid%SDA_HFX, SDA_QFX=grid%SDA_QFX,HFX_BOTH=grid%HFX_BOTH                        &  !fasdas
      &        ,QFX_BOTH=grid%QFX_BOTH,QNORM=grid%QNORM,fasdas=config_flags%fasdas                       &  !fasdas
      &        ,XLAIDYN=grid%XLAIDYN                                                                     &
@@ -1073,7 +1142,7 @@ BENCH_START(surf_driver_tim)
      &        ,field_sf=grid%field_sf                                                & !SPP
      &        ,spp_pbl=config_flags%spp_pbl,pattern_spp_pbl=grid%pattern_spp_pbl     & !SPP
   ! WRF-Solar EPS: Noah LSM
-     &        ,multi_perturb=config_flags% multi_perturb                             & 
+     &        ,multi_perturb=config_flags% multi_perturb                             &
      &        ,pert_noah=config_flags%pert_noah                                      &
      &        ,perts_qvapor=grid%pert3d(:,:,:,P_PQVAPOR)                             &
      &        ,perts_th=grid%pert3d(:,:,:,P_PTH)                                     &
@@ -1092,7 +1161,137 @@ BENCH_START(surf_driver_tim)
 #endif
 
 BENCH_END(surf_driver_tim)
+! aaron a. (WILL BE DELETED)
+write(*,*) 'RFK1: Trying to find issue in outputs: Normal noahmp '
+write(*,*) 'ISNOWXY',grid%ISNOWXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'TVXY',grid%TVXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'TGXY',grid%TGXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'CANICEXY',grid%CANICEXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'CANLIQXY',grid%CANLIQXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'EAHXY',grid%EAHXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'TAHXY',grid%TAHXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'CMXY',grid%CMXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'CHXY',grid%CHXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'FWETXY',grid%FWETXY_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'sneqvoxy',grid%sneqvoxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'alboldxy',grid%alboldxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qsnowxy',grid%qsnowxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qrainxy',grid%qrainxy_mosaic(grid%i_start,1,grid%j_start)
 
+write(*,*) 'tsnoxy',grid%tsnoxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'zsnsoxy',grid%zsnsoxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'snicexy',grid%snicexy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'snliqxy',grid%snliqxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'xsaixy',grid%xsaixy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'taussxy',grid%taussxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 't2mvxy',grid%t2mvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 't2mbxy',grid%t2mbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'q2mvxy',grid%q2mvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'q2mbxy',grid%q2mbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'tradxy',grid%tradxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'neexy',grid%neexy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'gppxy',grid%gppxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'nppxy',grid%nppxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'fvegxy',grid%fvegxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'runsfxy',grid%runsfxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'runsbxy',grid%runsbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'ecanxy',grid%ecanxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'edirxy',grid%edirxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'etranxy',grid%etranxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'fsaxy',grid%fsaxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'firaxy',grid%firaxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'aparxy',grid%aparxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'psnxy',grid%psnxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'savxy',grid%savxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'sagxy',grid%sagxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'rssunxy',grid%rssunxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'rsshaxy',grid%rsshaxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'bgapxy',grid%bgapxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'wgapxy',grid%wgapxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'tgvxy',grid%tgvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'tgbxy',grid%tgbxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'chvxy',grid%chvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chbxy',grid%chbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'shgxy',grid%shgxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'shcxy',grid%shcxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'shbxy',grid%shbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'evgxy',grid%evgxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'evbxy',grid%evbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'ghvxy',grid%ghvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'ghbxy',grid%ghbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irgxy',grid%irgxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'ircxy',grid%ircxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irbxy',grid%irbxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'trxy',grid%trxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'evcxy',grid%evcxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chleafxy',grid%chleafxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chucxy',grid%chucxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chv2xy',grid%chv2xy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chb2xy',grid%chb2xy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'chstarxy',grid%chstarxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'RFK1: Trying to find issue in outputs: Extra-outputs noahmp '
+
+write(*,*) 'qintsxy',grid%qintsxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qintrxy',grid%qintrxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qdriprxy',grid%qdriprxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qthrosxy',grid%qthrosxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qthrorxy',grid%qthrorxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qsnsubxy',grid%qsnsubxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qsnfroxy',grid%qsnfroxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qsubcxy',grid%qsubcxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qsnbotxy',grid%qsnbotxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'pondingxy',grid%pondingxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'pahxy',grid%pahxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'pahgxy',grid%pahgxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'pahvxy',grid%pahvxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'pahbxy',grid%pahbxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'qmeltxy',grid%qmeltxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'fpicexy',grid%fpicexy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qevacxy',grid%qevacxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'qdewcxy',grid%qdewcxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'acc_ssoil',grid%acc_ssoil_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_qinsur',grid%acc_qinsur_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_qseva',grid%acc_qseva_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_etrani',grid%acc_etrani_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'eflxbxy',grid%eflxbxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'soilenergy',grid%soilenergy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'snowenergy',grid%snowenergy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'canhsxy',grid%canhsxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_dwaterxy',grid%acc_dwaterxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_prcpxy',grid%acc_prcpxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_ecanxy',grid%acc_ecanxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_etranxy',grid%acc_etranxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'acc_edirxy',grid%acc_edirxy_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'RFK1: Trying to find issue in outputs: irrigation noahmp '
+
+write(*,*) 'irnumsi',grid%irnumsi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irnummi',grid%irnummi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irnumfi',grid%irnumfi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irwatsi',grid%irwatsi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irwatmi',grid%irwatmi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irwatfi',grid%irwatfi_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'ireloss',grid%ireloss_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irsivol',grid%irsivol_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irmivol',grid%irmivol_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irfivol',grid%irfivol_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'irrsplh',grid%irrsplh_mosaic(grid%i_start,1,grid%j_start)
+
+write(*,*) 'RFK1: Trying to find issue in outputs: Aaron A. outputs '
+
+write(*,*) 'runonsfxy',grid%runonsfxy(grid%i_start,grid%j_start)
+write(*,*) 'runonsfxy_mosaic',grid%runonsfxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'DETENTION_STORAGEXY',grid%DETENTION_STORAGEXY(grid%i_start,grid%j_start)
+write(*,*) 'vol_flux_runonxy_mosaic',grid%vol_flux_runonxy_mosaic(grid%i_start,1,grid%j_start)
+write(*,*) 'vol_flux_smxy_mosaic', grid%vol_flux_smxy_mosaic(grid%i_start,1,grid%j_start)
+! end aaron a print diagnose
 !*********
 ! pbl
 #if ( WRFPLUS == 1 )
@@ -1110,7 +1309,7 @@ BENCH_START(pbl_driver_tim)
      &        ,BL_PBL_PHYSICS=config_flags%bl_pbl_physics                           &
      &        ,WINDFARM_OPT=config_flags%windfarm_opt,power=grid%power              &
      &        ,BLDT=grid%bldt, CURR_SECS=curr_secs, ADAPT_STEP_FLAG=adapt_step_flag &
-     &        ,BLDTACTTIME=grid%bldtacttime                               &  
+     &        ,BLDTACTTIME=grid%bldtacttime                               &
      &        ,BR=grid%br         ,CHKLOWQ=chklowq    ,CT=grid%ct                   &
      &        ,DT=grid%dt         ,DX=grid%dx         ,DY=grid%dy                   &
      &        ,DX2D=grid%dx2d     ,AREA2D=grid%area2d                               &
@@ -1253,7 +1452,7 @@ BENCH_START(pbl_driver_tim)
      &        ,OA4SS=grid%oa4ss,OL1SS=grid%ol1ss,OL2SS=grid%ol2ss         &
      &        ,OL3SS=grid%ol3ss,OL4SS=grid%ol4ss                          &
      &        ,MFSHCONV=config_flags%mfshconv                             &
-     &        ,MASSFLUX_EDKF=grid%massflux_EDKF                           & 
+     &        ,MASSFLUX_EDKF=grid%massflux_EDKF                           &
      &        ,ENTR_EDKF=grid%entr_EDKF, DETR_EDKF=grid%detr_EDKF         &
      &        ,THL_UP=grid%thl_up                                         &
      &        ,THV_UP=grid%thv_up, RT_UP=grid%rt_up ,RV_UP=grid%rv_up     &
@@ -1322,14 +1521,14 @@ BENCH_START(pbl_driver_tim)
 BENCH_END(pbl_driver_tim)
 
 !*****
-! fire 
+! fire
 
 ! Jan Mandel's call to SFIRE
 
       IF ((grid%sr_x > 0 .OR. grid%sr_y > 0) .AND. config_flags%ifire == 2) THEN
 
 BENCH_START(fire_driver_tim)
-        if(config_flags%ifire.eq.2)then 
+        if(config_flags%ifire.eq.2)then
             ! initialization moved to start_em:start_domain_em
 !            if(grid%initestep.eq.1) &
 !            call fire_driver_em_init (  grid , config_flags    &
@@ -1369,7 +1568,7 @@ BENCH_START(cu_driver_tim)
      &             ,CUDT=grid%cudt,CURR_SECS=curr_secs,ADAPT_STEP_FLAG=adapt_step_flag &
      &             ,CCLDFRA=grid%ccldfra     ,CONVCLD=grid%convcld                     &
      &             ,QCCONV=grid%qcconv     ,QICONV=grid%qiconv                         &
-     &             ,CUDTACTTIME=grid%cudtacttime                                       & 
+     &             ,CUDTACTTIME=grid%cudtacttime                                       &
      &             ,RAINC=grid%rainc   ,RAINCV=grid%raincv   ,PRATEC=grid%pratec       &
      &             ,NCA=grid%nca                                                       &
      &             ,CLDFRA_DP=grid%cldfra_dp  ,CLDFRA_SH=grid%cldfra_sh                &
@@ -1438,10 +1637,10 @@ BENCH_START(cu_driver_tim)
      &             ,ktop_deep=grid%ktop_deep                              &
      &             ,PERIODIC_X=(config_flags%polar .OR. config_flags%periodic_x)  &
      &             ,PERIODIC_Y=config_flags%periodic_y                    &
-     &             ,IS_CAMMGMP_USED = grid%is_CAMMGMP_used  & !BSINGH - TKE at the interfaces for Zhang-McFarlane Scheme 
+     &             ,IS_CAMMGMP_USED = grid%is_CAMMGMP_used  & !BSINGH - TKE at the interfaces for Zhang-McFarlane Scheme
                  ! Zhang-McFarlane outputs
      &             ,EVAPCDP3D=grid%evapcdp3d, ICWMRDP3D=grid%icwmrdp3d    & !Balwinder.Singh@pnnl.gov: For CAM's wetscavenging
-     &             ,RPRDDP3D=grid%rprddp3d                                & 
+     &             ,RPRDDP3D=grid%rprddp3d                                &
      &             ,CAPE=grid%cape ,ZMMU=grid%zmmu ,ZMMD=grid%zmmd        &
      &             ,ZMDT=grid%zmdt ,ZMDQ=grid%zmdq                        &
      &             ,DLF=grid%dlf, RLIQ=grid%rliq                          &
@@ -1584,7 +1783,7 @@ BENCH_START(shcu_driver_tim)
      &             ,QS_CURR=moist(ims,kms,jms,P_QS)                       &
      &             ,QG_CURR=moist(ims,kms,jms,P_QG)                       &
      &             ,QNC_CURR=scalar(ims,kms,jms,P_QNC)                    & !BSINGH - Neede for UWSHCU scheme
-     &             ,QNI_CURR=scalar(ims,kms,jms,P_QNI)                    & !BSINGH - Neede for UWSHCU schem 
+     &             ,QNI_CURR=scalar(ims,kms,jms,P_QNI)                    & !BSINGH - Neede for UWSHCU schem
 #if (WRF_CHEM == 1)
      &             ,CHEM=chem,chem_opt=config_flags%chem_opt              &
 #endif
@@ -1598,7 +1797,7 @@ BENCH_START(shcu_driver_tim)
      &             ,RQVSHTEN=grid%rqvshten, RQCSHTEN=grid%rqcshten        &
      &             ,RQRSHTEN=grid%rqrshten, RQISHTEN=grid%rqishten        &
      &             ,RQSSHTEN=grid%rqsshten, RQGSHTEN=grid%rqgshten        &
-     &             ,RQCNSHTEN=grid%rqcnshten, RQINSHTEN=grid%rqinshten    &  
+     &             ,RQCNSHTEN=grid%rqcnshten, RQINSHTEN=grid%rqinshten    &
      &             ,RQVBLTEN=grid%rqvblten, RQVFTEN=grid%rqvften          &
      &             ,RUSHTEN=grid%rushten, RVSHTEN=grid%rvshten            &
      &             ,RTHSHTEN=grid%rthshten, RTHRATEN=grid%rthraten        &
@@ -1627,7 +1826,7 @@ BENCH_START(shcu_driver_tim)
      &             ,ltopb=grid%ltopb, kdcldtop=grid%kdcldtop              &
      &             ,kdcldbas=grid%kdcldbas                                &
      &             ,el_pbl=grid%el_pbl                                    &
-     &             ,rthratenlw=grid%rthratenlw, rthratensw=grid%rthratensw & 
+     &             ,rthratenlw=grid%rthratenlw, rthratensw=grid%rthratensw &
      &             ,exch_h=grid%exch_h                                    &
      &             ,dnw=grid%dnw, XTIME=grid%XTIME, XTIME1=grid%XTIME1    &
      &             ,GMT=grid%gmt                                          &
@@ -1635,7 +1834,7 @@ BENCH_START(shcu_driver_tim)
      &             ,PBLHAVG=grid%PBLHAVG, TKEAVG=grid%TKEAVG              &
      &             ,BL_PBL_PHYSICS=config_flags%bl_pbl_physics            &
   ! WRF-Solar EPS
-     &             ,multi_perturb=config_flags%multi_perturb              & 
+     &             ,multi_perturb=config_flags%multi_perturb              &
      &             ,pert_deng=config_flags%pert_deng                      &
      &             ,perts_qvapor=grid%pert3d(:,:,:,P_PQVAPOR)             &
      &             ,perts_qcloud=grid%pert3d(:,:,:,P_PQCLOUD)             &
@@ -1764,7 +1963,7 @@ BENCH_START(fdda_driver_tim)
 ! FASDAS
 !
                   SDA_HFX=grid%SDA_HFX, SDA_QFX=grid%SDA_QFX,      &
-                  HFX_FDDA=grid%HFX_FDDA,  & 
+                  HFX_FDDA=grid%HFX_FDDA,  &
 !
 ! END FASDAS
 !

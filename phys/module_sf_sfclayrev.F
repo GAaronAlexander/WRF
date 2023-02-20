@@ -143,14 +143,15 @@ CONTAINS
                                                               V10, &
                                                               TH2, &
                                                                T2, &
-                                                               Q2
+                                                               Q2, &
+                                                             QSFC
 
+!
       REAL,     DIMENSION( ims:ime, jms:jme )                    , &
                 INTENT(INOUT)               ::             REGIME, &
                                                               HFX, &
                                                               QFX, &
                                                                LH, &
-                                                             QSFC, &
                                                           MOL,RMOL
 !m the following 5 are change to memory size
 !
@@ -319,11 +320,11 @@ CONTAINS
 
       REAL,     DIMENSION( ims:ime )                             , &
                 INTENT(INOUT)   ::                                 &
-                                                         QSFC,QGH
+                                                              QGH
 
       REAL,     DIMENSION( ims:ime )                             , &
                 INTENT(OUT)     ::                        U10,V10, &
-                                                     TH2,T2,Q2,LH
+                                                TH2,T2,Q2,QSFC,LH
 
                                     
       REAL,     INTENT(IN   )               ::   CP,G,ROVCP,R,XLV,DX

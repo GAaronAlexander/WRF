@@ -625,7 +625,9 @@ use module_wrf_error
                    AKANDA_URBAN,ALH)
 
 ! Glotfelty, 2012/07/05, NUDAPT Modification
-
+ if (mh_urb.gt.0.0) THEN !aaron a. test to see if this is the issue 9 dec 2022
+    mh_urb=0.0
+ endif
  if(mh_urb.gt.0.0)THEN 
   !write(mesg,*) 'Mean Height NUDAPT',mh_urb
   !WRITE_MESSAGE(mesg)
@@ -686,7 +688,8 @@ use module_wrf_error
    SIGMA_ZED = stdh_urb
 
  !Calculate Wind Direction and Assign Appropriae lf_urb
-   WDR = (180.0/PI)*ATAN2(U10,V10)
+   print*,'U10,V10', U10, V10, mh_urb
+    WDR = (180.0/PI)*ATAN2(U10,V10)
    
    IF(WDR.ge.0.0.and.WDR.lt.22.5)THEN
      lambda_f = lf_urb(1)

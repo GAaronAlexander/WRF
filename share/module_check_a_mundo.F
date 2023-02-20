@@ -2404,7 +2404,6 @@
         IF ( model_config_rec%SF_SURFACE_PHYSICS(i) == CLMSCHEME .and. &
              model_config_rec%SF_URBAN_PHYSICS(i) >= 1 .and. &
              model_config_rec%SF_URBAN_PHYSICS(i) <= 3 ) THEN
-             oops = oops + 1 
         ENDIF
       ENDDO
       IF ( oops .GT. 0 ) THEN
@@ -3230,7 +3229,7 @@
 
       IMPLICIT NONE
 
-      INTEGER :: numsoiltemp , nummosaictemp
+      INTEGER :: numsoiltemp , nummosaictemp, numsnowtemp, numsnsltemp
       INTEGER :: i
 
 
@@ -3286,9 +3285,36 @@
          wrf_err_message = '--- NOTE: Noah-mosaic is in use, setting:  ' // &
                            'mosaic_cat_soil = mosaic_cat * num_soil_layers'
          CALL wrf_debug ( 1, wrf_err_message )
-
       END IF     
       
+
+!-----------------------------------------------------------------------
+! Set the namelist mosaic_cat_soil parameter for the NoahMP-mosaic  scheme if opt_mos == 1.  
+!-----------------------------------------------------------------------
+    IF (   model_config_rec % sf_surface_physics(1) .EQ. NOAHMPSCHEME ) THEN
+     IF ( model_config_rec % opt_mos .EQ. 1 ) THEN 
+        
+        numsoiltemp = model_config_rec % num_soil_layers
+        nummosaictemp = model_config_rec % mosaic_cat
+        numsnowtemp = model_config_rec % num_snow_layers
+        numsnsltemp = model_config_rec % num_snso_layers
+
+         model_config_rec % mosaic_cat_soil = numsoiltemp * nummosaictemp
+         model_config_rec % mosaic_cat_snow = numsnowtemp * nummosaictemp
+         model_config_rec % mosaic_cat_snsl = numsnsltemp * nummosaictemp
+
+         wrf_err_message = '--- NOTE: Noah-MP mosaic is in use, setting:  ' // &
+                           'mosaic_cat_soil = mosaic_cat * num_soil_layers' // &
+                           'mosaic_cat_snow = mosaic_cat * num_snow_layers' // &
+                           'mosaic_cat_snsl = mosaic_cat * num_snsl_layers'
+
+         CALL wrf_debug ( 1, wrf_err_message )
+
+      ENDIF
+     ENDIF
+
+
+
 #if (DA_CORE != 1)
 !-----------------------------------------------------------------------
 ! How big to allocate random seed arrays.

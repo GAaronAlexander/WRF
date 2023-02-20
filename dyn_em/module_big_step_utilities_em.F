@@ -1069,6 +1069,7 @@ SUBROUTINE calc_p_rho_phi ( moist, n_moist, hypsometric_opt,      &
         CALL VPOWX ( itf-its+1, temp(its), cpovcv, p(its,k,j) )
 #else
 ! use vector version from libmassv or from compat lib in frame/libmassv.F
+        !WRITE(*,*) 'p',p(its,k,j),'temp',temp(its),'cpovcv_v',cpovcv_v(its),'its',its,'k',k,'j',j,'i',i
         CALL VPOW  ( p(its,k,j), temp(its), cpovcv_v(its), itf-its+1 )
 #endif
         DO i=its,itf
