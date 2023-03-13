@@ -19,3 +19,4 @@ configure.wrf*
 *.f90
 *.log
 log*
+namelist.input*
