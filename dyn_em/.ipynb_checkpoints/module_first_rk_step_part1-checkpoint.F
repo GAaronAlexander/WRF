@@ -699,8 +699,6 @@ BENCH_START(surf_driver_tim)
      &        ,LakeMask=grid%LakeMask                                               & !lake
      &        ,restart_flag=restart_flag                                            & !flag showing if is a restart timestep
 #endif
-
-#if (WRF_NOAHMPHUE == 0)
 ! CLM Varaibles
      &        ,NUMC=grid%numc,NUMP=grid%nump,SABV=grid%sabv,SABG=grid%sabg,         &
      &         LWUP=grid%lwup,SNL=grid%snl,                                         &
@@ -763,7 +761,6 @@ BENCH_START(surf_driver_tim)
                laip=grid%laip,                                                      & !voce accum variables
                pct_pft_input=grid%pct_pft_input,num_pft_input=grid%num_pft_clm,  &
                input_pft_flag=config_flags%input_pft                             &
-#endif 
 ! end of CLM variables
      &        ,SLOPE_RAD=config_flags%slope_rad,TOPO_SHADING=config_flags%topo_shading & ! solar
      &        ,SHADOWMASK=grid%shadowmask,DIFFUSE_FRAC=grid%diffuse_frac               & ! solar

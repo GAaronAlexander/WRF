@@ -36,6 +36,7 @@ while [ $# -ge 1 ]; do
       mars) WRF_MARS=1 ; break ;;
       venus) WRF_VENUS=1 ; break ;;
       wrfplus) wrf_core=WRF_PLUS_CORE ; break ;;
+      hue) WRF_NOAHMPHUE=1 ;;
       *) echo "This option is not recognized: $1" ; exit 2 ;;
     esac
     shift
@@ -455,6 +456,18 @@ if [ -n "$WRF_HYDRO" ] ; then
       echo $compileflags
   fi
 fi
+# compile options that come from the environment, such as chemistry
+# the "!" is removed by Config.pl                ! editied by aaron a. 
+  if [ $WRF_NOAHMPHUE = 1 ] ; then
+      echo building WRF NOAH-MP HUE 
+      compileflags="${compileflags}!-DWRF_NOAHMPHUE"
+      echo $compileflags
+  else
+      export WRF_NOAHMPHUE=0
+      echo building without NOAH-MP HUE
+      compilerflags="${compileflags}!-DWRF_NOAHMPHUE"
+      echo $compileflags
+  fi
 
 # compile options that come from the environment, such as chemistry
 # the "!" is removed by Config.pl
