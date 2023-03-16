@@ -699,6 +699,8 @@ BENCH_START(surf_driver_tim)
      &        ,LakeMask=grid%LakeMask                                               & !lake
      &        ,restart_flag=restart_flag                                            & !flag showing if is a restart timestep
 #endif
+
+#if (WRF_NOAHMPHUE == 0)
 ! CLM Varaibles
      &        ,NUMC=grid%numc,NUMP=grid%nump,SABV=grid%sabv,SABG=grid%sabg,         &
      &         LWUP=grid%lwup,SNL=grid%snl,                                         &
@@ -761,6 +763,7 @@ BENCH_START(surf_driver_tim)
                laip=grid%laip,                                                      & !voce accum variables
                pct_pft_input=grid%pct_pft_input,num_pft_input=grid%num_pft_clm,  &
                input_pft_flag=config_flags%input_pft                             &
+#endif 
 ! end of CLM variables
      &        ,SLOPE_RAD=config_flags%slope_rad,TOPO_SHADING=config_flags%topo_shading & ! solar
      &        ,SHADOWMASK=grid%shadowmask,DIFFUSE_FRAC=grid%diffuse_frac               & ! solar
@@ -1086,34 +1089,8 @@ BENCH_START(surf_driver_tim)
      &        ,lfmassxy_mosaic=grid%lfmassxy_mosaic ,rtmassxy_mosaic=grid%rtmassxy_mosaic,stmassxy_mosaic=grid%stmassxy_mosaic &
      &        ,  woodxy_mosaic=grid%woodxy_mosaic   ,stblcpxy_mosaic=grid%stblcpxy_mosaic,fastcpxy_mosaic=grid%fastcpxy_mosaic &
      &        ,  xsaixy_mosaic=grid%xsaixy_mosaic   , taussxy_mosaic=grid%taussxy_mosaic                         &
-     &        ,  t2mvxy_mosaic=grid%t2mvxy_mosaic   ,  t2mbxy_mosaic=grid%t2mbxy_mosaic                          &
-     &        ,  q2mvxy_mosaic=grid%q2mvxy_mosaic   ,  q2mbxy_mosaic=grid%q2mbxy_mosaic                          &
-     &        ,  tradxy_mosaic=grid%tradxy_mosaic   ,   neexy_mosaic=grid%neexy_mosaic   ,   gppxy_mosaic=grid%gppxy_mosaic    &
-     &        ,   nppxy_mosaic=grid%nppxy_mosaic    ,  fvegxy_mosaic=grid%fvegxy_mosaic  , runsfxy_mosaic=grid%runsfxy_mosaic  &
-     &        , runsbxy_mosaic=grid%runsbxy_mosaic  ,  ecanxy_mosaic=grid%ecanxy_mosaic  ,  edirxy_mosaic=grid%edirxy_mosaic   &
-     &        , etranxy_mosaic=grid%etranxy_mosaic  ,   fsaxy_mosaic=grid%fsaxy_mosaic   ,  firaxy_mosaic=grid%firaxy_mosaic   &
-     &        ,  aparxy_mosaic=grid%aparxy_mosaic   ,   psnxy_mosaic=grid%psnxy_mosaic   ,   savxy_mosaic=grid%savxy_mosaic    &
-     &        ,   sagxy_mosaic=grid%sagxy_mosaic    , rssunxy_mosaic=grid%rssunxy_mosaic , rsshaxy_mosaic=grid%rsshaxy_mosaic  &
-     &        ,  bgapxy_mosaic=grid%bgapxy_mosaic   ,  wgapxy_mosaic=grid%wgapxy_mosaic  ,   tgvxy_mosaic=grid%tgvxy_mosaic    &
-     &        ,   tgbxy_mosaic=grid%tgbxy_mosaic    ,   chvxy_mosaic=grid%chvxy_mosaic   ,   chbxy_mosaic=grid%chbxy_mosaic    &
-     &        ,   shgxy_mosaic=grid%shgxy_mosaic    ,   shcxy_mosaic=grid%shcxy_mosaic   ,   shbxy_mosaic=grid%shbxy_mosaic    &
-     &        ,   evgxy_mosaic=grid%evgxy_mosaic    ,   evbxy_mosaic=grid%evbxy_mosaic   ,   ghvxy_mosaic=grid%ghvxy_mosaic    &
-     &        ,   ghbxy_mosaic=grid%ghbxy_mosaic    ,   irgxy_mosaic=grid%irgxy_mosaic   ,   ircxy_mosaic=grid%ircxy_mosaic    &
-     &        ,   irbxy_mosaic=grid%irbxy_mosaic    ,    trxy_mosaic=grid%trxy_mosaic    ,   evcxy_mosaic=grid%evcxy_mosaic    &
-     &        ,chleafxy_mosaic=grid%chleafxy_mosaic ,  chucxy_mosaic=grid%chucxy_mosaic                          &
-     &        ,  chv2xy_mosaic=grid%chv2xy_mosaic   ,  chb2xy_mosaic=grid%chb2xy_mosaic , chstarxy_mosaic=grid%chstarxy_mosaic &
-! Noah-MP extra output fields
-     &        ,    qintsxy_mosaic=grid%qintsxy_mosaic    ,   qintrxy_mosaic=grid%qintrxy   ,   qdripsxy_mosaic=grid%qdripsxy_mosaic   &
-     &        ,   qdriprxy_mosaic=grid%qdriprxy_mosaic   ,  qthrosxy_mosaic=grid%qthrosxy_mosaic  ,   qthrorxy_mosaic=grid%qthrorxy_mosaic   &
-     &        ,   qsnsubxy_mosaic=grid%qsnsubxy_mosaic   ,  qsnfroxy_mosaic=grid%qsnfroxy_mosaic  ,    qsubcxy_mosaic=grid%qsubcxy_mosaic    &
-     &        ,    qfrocxy_mosaic=grid%qfrocxy_mosaic    ,   qfrzcxy_mosaic=grid%qfrzcxy_mosaic   ,   qmeltcxy_mosaic=grid%qmeltcxy_mosaic   &
-     &        ,   qsnbotxy_mosaic=grid%qsnbotxy_mosaic   , pondingxy_mosaic=grid%pondingxy_mosaic ,      PAHXY_mosaic=grid%PAHXY_mosaic      &
-     &        ,     PAHGXY_mosaic=grid%PAHGXY_mosaic     ,    PAHVXY_mosaic=grid%PAHVXY_mosaic    ,     PAHBXY_mosaic=grid%PAHBXY_mosaic     &
-     &        ,    qmeltxy_mosaic=grid%qmeltxy_mosaic    ,   FPICEXY_mosaic=grid%FPICEXY_mosaic   ,   qevacxy_mosaic=grid%qevacxy_mosaic     &
-     &        ,    qdewcxy_mosaic=grid%qdewcxy_mosaic     &
      &        ,  acc_ssoilxy_mosaic=grid%acc_ssoil_mosaic  ,acc_qinsurxy_mosaic=grid%acc_qinsur_mosaic,  acc_qsevaxy_mosaic=grid%acc_qseva_mosaic  &
-     &        , acc_etranixy_mosaic=grid%acc_etrani_mosaic ,   eflxbxy_mosaic=grid%eflxbxy_mosaic                                &
-     &        , soilenergy_mosaic=grid%soilenergy_mosaic ,snowenergy_mosaic=grid%snowenergy_mosaic,    canhsxy_mosaic=grid%canhsxy_mosaic    &
+     &        , acc_etranixy_mosaic=grid%acc_etrani_mosaic , 
      &        , ACC_DWATERXY_mosaic=grid%ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic=grid%ACC_PRCPXY_mosaic,ACC_ECANXY_mosaic=grid%ACC_ECANXY_mosaic &
      &        , ACC_ETRANXY_mosaic=grid%ACC_ETRANXY_mosaic, ACC_EDIRXY_mosaic=grid%ACC_EDIRXY_mosaic  &
 ! Noah-MP irrigation

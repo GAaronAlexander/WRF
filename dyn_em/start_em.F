@@ -1157,7 +1157,6 @@ endif
                       grid%IRMIVOL_mosaic, grid%IRFIVOL_mosaic,                                 &   ! Optional Noah-MP aarona
                       grid%IRRSPLH_mosaic,                                                      &   ! Optional Noah-MP aarona
                       grid%xsaixy_mosaic,grid%LAI_mosaic,                                       &   ! Optional Noah-MP aarona
-                      grid%T2MVXY_mosaic, grid%T2MBXY_mosaic, grid%CHSTARXY_mosaic,             &   ! Optional Noah-MP aarona
                       grid%SMOISEQ_mosaic  ,grid%SMCWTDXY_mosaic ,grid%RECHXY_mosaic,           &   ! Optional Noah-MP aarona
                       grid%DEEPRECHXY_mosaic,                                                   &   ! Optional Noah-MP aarona
                       grid%TGRL_URB3D_mosaic, grid%SMR_URB3D_mosaic, grid%CMR_SFCDIF_mosaic,    &
