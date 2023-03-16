@@ -1,0 +1,2 @@
+diff: extra operand './clean'
+diff: Try 'diff --help' for more information.
