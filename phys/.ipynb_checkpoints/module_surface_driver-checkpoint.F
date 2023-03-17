@@ -164,8 +164,7 @@ CONTAINS
      &          ,eahxy_mosaic, tahxy_mosaic, cmxy_mosaic,chxy_mosaic, fwetxy_mosaic, sneqvoxy_mosaic, alboldxy_mosaic,qsnowxy_mosaic, qrainxy_mosaic      &
      &          ,wslakexy_mosaic, zwtxy_mosaic, waxy_mosaic, wtxy_mosaic, tsnoxy_mosaic, zsnsoxy_mosaic,snicexy_mosaic, snliqxy_mosaic,lfmassxy_mosaic    &
      &          ,rtmassxy_mosaic, stmassxy_mosaic, woodxy_mosaic, stblcpxy_mosaic, fastcpxy_mosaic, xsaixy_mosaic, taussxy_mosaic       &
-    
-     &          acc_ssoilxy_mosaic,acc_qinsurxy_mosaic, acc_qsevaxy_mosaic, acc_etranixy_mosaic        &
+     &          ,acc_ssoilxy_mosaic,acc_qinsurxy_mosaic, acc_qsevaxy_mosaic, acc_etranixy_mosaic        &
      &          ,ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic, ACC_ECANXY_mosaic          &
      &          , ACC_ETRANXY_mosaic,ACC_EDIRXY_mosaic, IRNUMSI_mosaic, IRNUMMI_mosaic &
      &          ,IRNUMFI_mosaic, IRWATSI_mosaic,IRWATMI_mosaic,IRWATFI_mosaic,IRELOSS_mosaic, IRSIVOL_mosaic,IRMIVOL_mosaic,IRFIVOL_mosaic,IRRSPLH_mosaic &
@@ -3222,7 +3221,7 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
                                    ALBEDO_mosaic, SNOWC_mosaic, TSLB_mosaic, SMOIS_mosaic,               &      ! Added by Aaron A. IN/OUT LSM
                                    SH2O_mosaic,  CANWAT_mosaic, SNOW_mosaic, SNOWH_mosaic,               &      ! Added by Aaron A. IN/OUT LSM
                                    ACSNOM_mosaic, ACSNOW_mosaic, EMISS_mosaic, QSFC_mosaic,              &      ! Added by Aaron A. IN/OUT LSM
-                                   Z0_mosaic, ZNT_mosaic,                                                &      ! Added by Aaron A. IN/OUT LSM
+                                   Z0_mosaic, ZNT_mosaic, RS_mosaic,                                     &      ! Added by Aaron A. IN/OUT LSM
                                    IRNUMSI_mosaic, IRNUMMI_mosaic, IRNUMFI_mosaic, IRWATSI_mosaic,       &      ! Added by Aaron A. IN/OUT Irrigation Scheme
                                    IRWATMI_mosaic, IRWATFI_mosaic, IRELOSS_mosaic, IRSIVOL_mosaic,       &      ! Added by Aaron A. IN/OUT Irrigation Scheme
                                    IRMIVOL_mosaic, IRFIVOL_mosaic, IRRSPLH_mosaic,                       &      ! Added by Aaron A. IN/OUT Irrigation Scheme

@@ -1090,7 +1090,7 @@ BENCH_START(surf_driver_tim)
      &        ,  woodxy_mosaic=grid%woodxy_mosaic   ,stblcpxy_mosaic=grid%stblcpxy_mosaic,fastcpxy_mosaic=grid%fastcpxy_mosaic &
      &        ,  xsaixy_mosaic=grid%xsaixy_mosaic   , taussxy_mosaic=grid%taussxy_mosaic                         &
      &        ,  acc_ssoilxy_mosaic=grid%acc_ssoil_mosaic  ,acc_qinsurxy_mosaic=grid%acc_qinsur_mosaic,  acc_qsevaxy_mosaic=grid%acc_qseva_mosaic  &
-     &        , acc_etranixy_mosaic=grid%acc_etrani_mosaic , 
+     &        , acc_etranixy_mosaic=grid%acc_etrani_mosaic  
      &        , ACC_DWATERXY_mosaic=grid%ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic=grid%ACC_PRCPXY_mosaic,ACC_ECANXY_mosaic=grid%ACC_ECANXY_mosaic &
      &        , ACC_ETRANXY_mosaic=grid%ACC_ETRANXY_mosaic, ACC_EDIRXY_mosaic=grid%ACC_EDIRXY_mosaic  &
 ! Noah-MP irrigation
@@ -1143,138 +1143,7 @@ BENCH_START(surf_driver_tim)
 #endif
 
 BENCH_END(surf_driver_tim)
-! aaron a. (WILL BE DELETED)
-write(*,*) 'RFK1: Trying to find issue in outputs: Normal noahmp '
-write(*,*) 'ISNOWXY',grid%ISNOWXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'TVXY',grid%TVXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'TGXY',grid%TGXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'CANICEXY',grid%CANICEXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'CANLIQXY',grid%CANLIQXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'EAHXY',grid%EAHXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'TAHXY',grid%TAHXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'CMXY',grid%CMXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'CHXY',grid%CHXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'FWETXY',grid%FWETXY_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'sneqvoxy',grid%sneqvoxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'alboldxy',grid%alboldxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qsnowxy',grid%qsnowxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qrainxy',grid%qrainxy_mosaic(grid%i_start,1,grid%j_start)
 
-write(*,*) 'tsnoxy',grid%tsnoxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'zsnsoxy',grid%zsnsoxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'snicexy',grid%snicexy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'snliqxy',grid%snliqxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'xsaixy',grid%xsaixy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'taussxy',grid%taussxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 't2mvxy',grid%t2mvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 't2mbxy',grid%t2mbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'q2mvxy',grid%q2mvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'q2mbxy',grid%q2mbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'tradxy',grid%tradxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'neexy',grid%neexy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'gppxy',grid%gppxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'nppxy',grid%nppxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'fvegxy',grid%fvegxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'runsfxy',grid%runsfxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'runsbxy',grid%runsbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'ecanxy',grid%ecanxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'edirxy',grid%edirxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'etranxy',grid%etranxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'fsaxy',grid%fsaxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'firaxy',grid%firaxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'aparxy',grid%aparxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'psnxy',grid%psnxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'savxy',grid%savxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'sagxy',grid%sagxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'rssunxy',grid%rssunxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'rsshaxy',grid%rsshaxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'bgapxy',grid%bgapxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'wgapxy',grid%wgapxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'tgvxy',grid%tgvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'tgbxy',grid%tgbxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'chvxy',grid%chvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chbxy',grid%chbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'shgxy',grid%shgxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'shcxy',grid%shcxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'shbxy',grid%shbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'evgxy',grid%evgxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'evbxy',grid%evbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'ghvxy',grid%ghvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'ghbxy',grid%ghbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irgxy',grid%irgxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'ircxy',grid%ircxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irbxy',grid%irbxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'trxy',grid%trxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'evcxy',grid%evcxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chleafxy',grid%chleafxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chucxy',grid%chucxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chv2xy',grid%chv2xy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chb2xy',grid%chb2xy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'chstarxy',grid%chstarxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'RFK1: Trying to find issue in outputs: Extra-outputs noahmp '
-
-write(*,*) 'qintsxy',grid%qintsxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qintrxy',grid%qintrxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qdriprxy',grid%qdriprxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qthrosxy',grid%qthrosxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qthrorxy',grid%qthrorxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qsnsubxy',grid%qsnsubxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qsnfroxy',grid%qsnfroxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qsubcxy',grid%qsubcxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qsnbotxy',grid%qsnbotxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'pondingxy',grid%pondingxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'pahxy',grid%pahxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'pahgxy',grid%pahgxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'pahvxy',grid%pahvxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'pahbxy',grid%pahbxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'qmeltxy',grid%qmeltxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'fpicexy',grid%fpicexy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qevacxy',grid%qevacxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'qdewcxy',grid%qdewcxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'acc_ssoil',grid%acc_ssoil_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_qinsur',grid%acc_qinsur_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_qseva',grid%acc_qseva_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_etrani',grid%acc_etrani_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'eflxbxy',grid%eflxbxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'soilenergy',grid%soilenergy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'snowenergy',grid%snowenergy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'canhsxy',grid%canhsxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_dwaterxy',grid%acc_dwaterxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_prcpxy',grid%acc_prcpxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_ecanxy',grid%acc_ecanxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_etranxy',grid%acc_etranxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'acc_edirxy',grid%acc_edirxy_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'RFK1: Trying to find issue in outputs: irrigation noahmp '
-
-write(*,*) 'irnumsi',grid%irnumsi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irnummi',grid%irnummi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irnumfi',grid%irnumfi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irwatsi',grid%irwatsi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irwatmi',grid%irwatmi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irwatfi',grid%irwatfi_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'ireloss',grid%ireloss_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irsivol',grid%irsivol_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irmivol',grid%irmivol_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irfivol',grid%irfivol_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'irrsplh',grid%irrsplh_mosaic(grid%i_start,1,grid%j_start)
-
-write(*,*) 'RFK1: Trying to find issue in outputs: Aaron A. outputs '
-
-write(*,*) 'runonsfxy',grid%runonsfxy(grid%i_start,grid%j_start)
-write(*,*) 'runonsfxy_mosaic',grid%runonsfxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'DETENTION_STORAGEXY',grid%DETENTION_STORAGEXY(grid%i_start,grid%j_start)
-write(*,*) 'vol_flux_runonxy_mosaic',grid%vol_flux_runonxy_mosaic(grid%i_start,1,grid%j_start)
-write(*,*) 'vol_flux_smxy_mosaic', grid%vol_flux_smxy_mosaic(grid%i_start,1,grid%j_start)
-! end aaron a print diagnose
-!*********
 ! pbl
 #if ( WRFPLUS == 1 )
 #ifdef DM_PARALLEL
