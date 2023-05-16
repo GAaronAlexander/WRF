@@ -6850,11 +6850,6 @@ type(noahmp_parameters) :: parameters
               SH2O( I, 1:NSOIL, J ) = SMH2O(1:NSOIL)
             END IF
 
-                 IF(I == 1) then 
-                   IF (J == 1) then
-                       WRITE(*,*) 'TRAD' ,TRAD
-                    endif 
-               endif 
 
 
                   TSK      (I,J)                = TRAD

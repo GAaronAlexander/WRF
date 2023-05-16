@@ -2150,12 +2150,6 @@ CONTAINS
                  scm_force_flux,sf_surface_physics  )
          ELSE
          
-         write(*,*) 'OUTSIDE WRAPPER'
-         if(i_start(ij) == 1) then 
-             if(j_start(ij) == 1) then
-                 write(*,*) 't_phy' , t_phy(1,1,1), 'p_phy',p_phy(1,1,1)
-             endif
-         endif
          
          CALL SFCLAYREV(u_phytmp,v_phytmp,t_phy,qv_curr,&
                p_phy,dz8w,cp,g,rcp,r_d,xlv,psfc,chs,chs2,cqs2,cpm, &
