@@ -1814,7 +1814,7 @@ END_WB = 0.0
      IF (OPT_HUE.eq.1) THEN
        !This is the coupled tree/impermeable pavements
        IF (VEGTYP.eq.41) THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA
+         END_WB = CANLIQ + CANICE + SNEQV + WA 
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1822,7 +1822,7 @@ END_WB = 0.0
          !has been completely disconnected (meaning all water will be
          ! input to an adjacent turf grass or vegitatation type (43))
        ELSE IF( (VEGTYP.eq.42).or.(VEGTYP.eq.45) ) THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA
+         END_WB = CANLIQ + CANICE + SNEQV + WA + RUNONSRF*DT
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1833,7 +1833,7 @@ END_WB = 0.0
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
        ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.43) )THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA
+         END_WB = CANLIQ + CANICE + SNEQV + WA  - RUNONSRF*DT
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1888,6 +1888,7 @@ END_WB = 0.0
            WRITE(*,*) 'END_WB', END_WB, 'BEG_WB', BEG_WB
            WRITE(*,*) 'CANICE', CANICE, 'SNEQV', SNEQV
            IF(OPT_HUE.eq.1) THEN
+           write(*,*) 'RUNONSRF', RUNONSRF
              WRITE(message, &
              '("     I      J     END-BEG     PRCP     IRMIRATE     IRFIRATE      ECAN     EDIR    ETRAN   RUNSRF   RUNSUB   ZWT   QTLDRN  RUNONSRF   DETENTION_STORAGE ")')
              call wrf_message(trim(message))
@@ -2475,7 +2476,7 @@ END_WB = 0.0
         SSOIL = FVEG * GHV       + (1.0 - FVEG) * GHB
         FCEV  = EVC
         FCTR  = TR
-	PAH   = FVEG * PAHG      + (1.0 - FVEG) * PAHB   + PAHV
+	    PAH   = FVEG * PAHG      + (1.0 - FVEG) * PAHB   + PAHV
         TG    = FVEG * TGV       + (1.0 - FVEG) * TGB
         T2M   = FVEG * T2MV      + (1.0 - FVEG) * T2MB
         TS    = FVEG * TV        + (1.0 - FVEG) * TGB
@@ -2525,7 +2526,7 @@ END_WB = 0.0
     ! When we're computing a TRAD, subtract from the emitted IR the
     ! reflected portion of the incoming LWDN, so we're just
     ! considering the IR originating in the canopy/ground system.
-
+    
     TRAD = ( ( FIRE - (1-EMISSI)*LWDN ) / (EMISSI*SB) ) ** 0.25
 
     ! Old TRAD calculation not taking into account Emissivity:
@@ -2662,6 +2663,8 @@ ELSE ! Normal
        CALL TDFCND (parameters,IZ,DF(IZ), SMC(IZ), SH2O(IZ))
     END DO
 END IF
+
+    
 IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN !added by Aaron A.
        DO IZ = 1,NSOIL
          DF(IZ) = 3.24
@@ -2877,7 +2880,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 
     DF = AKE * (THKSAT - THKDRY) + THKDRY
 
-
+    
   end subroutine TDFCND
 
 !== begin radiation ================================================================================
@@ -4552,10 +4555,9 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 
         CIR = EMG*SB
         CGH = 2.0*DF(ISNOW+1)/DZSNSO(ISNOW+1)
-
 ! -----------------------------------------------------------------
       loop3: DO ITER = 1, NITERB  ! begin stability iteration
-
+        
         IF(ITER == 1) THEN
             Z0H = Z0M
         ELSE
@@ -4569,7 +4571,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
                        MOZ    ,MOZSGN ,FM     ,FH     ,FM2,FH2, & !inout
                        CM     ,CH     ,FV     ,CH2     )          !out
         ENDIF
-
+        
         IF(OPT_SFC == 2) THEN
           CALL SFCDIF2(parameters,ITER   ,Z0M    ,TGB    ,THAIR  ,UR     , & !in
                        ZLVL   ,ILOC   ,JLOC   ,         & !in
@@ -4615,7 +4617,6 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
         SHB   = CSH * (TGB        - SFCTMP      )
         EVB   = CEV * (ESTG*RHSUR - EAIR        )
         GHB   = CGH * (TGB        - STC(ISNOW+1))
-
         B     = SAG-IRB-SHB-EVB-GHB+PAHB
         A     = 4.0*CIR*TGB**3 + CSH + CEV*DESTG + CGH
         DTG   = B/A
@@ -4624,7 +4625,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
         SHB = SHB + CSH*DTG
         EVB = EVB + CEV*DESTG*DTG
         GHB = GHB + CGH*DTG
-
+        
 ! update ground surface temperature
         TGB = TGB + DTG
 
@@ -4681,6 +4682,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 
 ! update CH
      CH = EHB
+     
 
   END SUBROUTINE BARE_FLUX
 

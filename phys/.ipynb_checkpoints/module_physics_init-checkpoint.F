@@ -175,7 +175,8 @@ CONTAINS
                          DRELR_URB2D_mosaic, DRELB_URB2D_mosaic,  &
                          DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic, &
                          FLXHUMB_URB2D_mosaic, FLXHUMG_URB2D_mosaic,                &
-                         opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic,                     &   ! Optional Noah-MP aarona
+                         opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic,              &     
+                         VOL_FLUX_RUNONXY_mosaic, VOL_FLUX_SMXY_mosaic,             &   ! Optional Noah-MP aarona
                          !-------------END Noah-MP Mosaic for Noah-MP HUE ----------------------------------------------------
                          msftx, msfty,                           &           ! Optional Noah-MP
 !                        num_roof_layers,num_wall_layers,        & !Optional urban
@@ -1027,7 +1028,8 @@ CONTAINS
    REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: FLXHUMG_URB2D_mosaic
    ! HUE Model
    REAL,   DIMENSION(ims:ime,1:mosaic_cat,jms:jme),  INTENT(INOUT) :: DETENTION_STORAGEXY_mosaic
-
+   REAL,   DIMENSION(ims:ime,1:num_soil_layers*mosaic_cat,jms:jme),  INTENT(INOUT) :: VOL_FLUX_SMXY_mosaic
+   REAL,   DIMENSION(ims:ime,1:mosaic_cat,jms:jme),  INTENT(INOUT) :: VOL_FLUX_RUNONXY_mosaic
    !-------------------------------------------------
    ! End of Noah-mp mosaic and HUE
    !-------------------------------------------------
@@ -1747,7 +1749,7 @@ CHARACTER(LEN=8) :: name
                 TGR_URB2D_mosaic, DRELR_URB2D_mosaic, DRELB_URB2D_mosaic,       &
                 DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic,       &
                 FLXHUMG_URB2D_mosaic, &
-                opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic                &   ! Optional Noah-MP aarona
+                opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic ,VOL_FLUX_RUNONXY_mosaic,VOL_FLUX_SMXY_mosaic               &   ! Optional Noah-MP aarona
                )
 
    CALL wrf_debug ( 200 , 'module_start: phy_init: Before call to cu_init' )
@@ -2815,7 +2817,7 @@ CHARACTER(LEN=8) :: name
                 TGR_URB2D_mosaic, DRELR_URB2D_mosaic, DRELB_URB2D_mosaic,       &
                 DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic,       &
                 FLXHUMG_URB2D_mosaic, &
-                opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic                &   ! Optional Noah-MP aarona
+                opt_hue, opt_mos, DETENTION_STORAGEXY_mosaic,VOL_FLUX_RUNONXY_mosaic,VOL_FLUX_SMXY_mosaic                 &   ! Optional Noah-MP aarona
                 ) !Optional oml
 !--------------------------------------------------------------------
    USE module_sf_sfclay
@@ -3366,7 +3368,8 @@ CHARACTER(LEN=8) :: name
   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: FLXHUMG_URB2D_mosaic
   ! HUE Model
   REAL,   DIMENSION(ims:ime,1:mosaic_cat,jms:jme),  INTENT(INOUT) :: DETENTION_STORAGEXY_mosaic
-
+  REAL,   DIMENSION(ims:ime,1:mosaic_cat,jms:jme),  INTENT(INOUT) :: VOL_FLUX_RUNONXY_mosaic
+  REAL,   DIMENSION(ims:ime,1:num_soil_layers*mosaic_cat,jms:jme),  INTENT(INOUT) :: VOL_FLUX_SMXY_mosaic
   !-------------------------------------------------
   ! END Noah-MP mosaic related variables & Noah-MP HUE are added to declaration  (aarona)
   !-------------------------------------------------
@@ -3876,7 +3879,7 @@ CALL lsm_mosaic_init(IVGTYP,config_flags%ISWATER,config_flags%ISURBAN,config_fla
                         TGRL_URB3D_mosaic, SMR_URB3D_mosaic,                                  &
                         DRELR_URB2D_mosaic, DRELB_URB2D_mosaic, DRELG_URB2D_mosaic,           &
                         FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic, FLXHUMG_URB2D_mosaic,     &
-                        DETENTION_STORAGEXY_mosaic,                                           &
+                        DETENTION_STORAGEXY_mosaic, VOL_FLUX_SMXY_mosaic, VOL_FLUX_RUNONXY_mosaic,      &
 #if ( NMM_CORE == 1 )
                                                                                     Z0, &            ! Added by Aaron A. (Following Dan Li)
 #else

@@ -1166,7 +1166,8 @@ endif
                       grid%TGR_URB2D_mosaic,grid%DRELR_URB2D_mosaic, grid%DRELB_URB2D_mosaic,       &
                       grid%DRELG_URB2D_mosaic, grid%FLXHUMR_URB2D_mosaic, grid%FLXHUMB_URB2D_mosaic,       &
                       grid%FLXHUMG_URB2D_mosaic, &
-                      config_flags%opt_hue, config_flags%opt_mos, grid%DETENTION_STORAGEXY_mosaic,                                &   ! Optional Noah-MP aarona
+                      config_flags%opt_hue, config_flags%opt_mos, grid%DETENTION_STORAGEXY_mosaic,         &
+                      grid%VOL_FLUX_RUNONXY_mosaic, grid%VOL_FLUX_SMXY_mosaic,  &   ! Optional Noah-MP aarona
                       !-------------END Noah-MP Mosaic for Noah-MP HUE ----------------------------------------------------
                       grid%msftx, grid%msfty,                              &
                       grid%DZR, grid%DZB, grid%DZG,                          & !Optional urban

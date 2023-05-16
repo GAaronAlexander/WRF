@@ -272,7 +272,8 @@ state    real   zwtxy_mosaic      i{mocat}j      misc       1      -     rd=(int
 state    real   waxy_mosaic       i{mocat}j      misc       1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "wa_mosaic"         "water in the acquifer"               "mm"
 state    real   wtxy_mosaic       i{mocat}j      misc       1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "wt_mosaic"         "groundwater storage"                 "mm"
 state    real   tsnoxy_mosaic     i{mocat3}j     misc       1      Z     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "tsno_mosaic"       "snow temperature"                    "K"
-state    real   zsnsoxy_mosaic    i{mocat4}j     misc       1      Z     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "zsnso_mosaic"      "layer-bottom depth from snow surf"   "m"
+state    real   zsnsoxy_mosaic    i{mocat4}j     misc       1      Z     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)  
+"zsnso_mosaic"      "layer-bottom depth from snow surf"   "m"
 state    real   snicexy_mosaic    i{mocat3}j     misc       1      Z     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "snice_mosaic"      "snow layer ice"                      "mm"
 state    real   snliqxy_mosaic    i{mocat3}j     misc       1      Z     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)   "snliq_mosiac"      "snow layer liquid"                   "mm"
 state    real   lfmassxy_mosaic   i{mocat}j      misc       1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "lfmass_mosiac"     "leaf mass"                           "g/m2"
@@ -395,5 +396,5 @@ state    real   RUNONSFXY                     ij             misc       1      -
 state    real   RUNONSFXY_mosaic              i{mocat}j      misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "runonsfxy_mosaic"               "average RUNON between each landtype in grid"    "mm"
 state    real   DETENTION_STORAGEXY           ij             misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "DETENTION_STORAGEXY"            "depth of water stored in green roof parameterization in Noah-MP HUE"    "mm"
 state    real   DETENTION_STORAGEXY_mosaic    i{mocat}j      misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)      "DETENTION_STORAGEXY"            "depth of water stored in green roof parameterization in Noah-MP HUE"    "mm"
-state    real   VOL_FLUX_RUNONXY_mosaic       i{mocat}j      misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "vol_flux_smxy_mosaic"           "volume of water fluxed between adjacient land types (soilmoisture)"    "m3"  #location corresponds to rank
-state    real   VOL_FLUX_SMXY_mosaic          i{mocat}j      misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "vol_flux_runonxy_mosaic"        "volume of water fluxed between adjacient land types (runon)"    "m3"        # location corresponds to rank
+state    real   VOL_FLUX_RUNONXY_mosaic       i{mocat}j      misc       1      -     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "vol_flux_runonxy_mosaic"           volume of water fluxed between adjacient land types (runon)"    "m3
+state    real   VOL_FLUX_SMXY_mosaic          i{mocat2}j      misc       1     Z     rhd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "vol_flux_smxy_mosaic"        "volume of water fluxed between adjacient land types SM"    "m3"        

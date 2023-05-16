@@ -1380,8 +1380,10 @@ CONTAINS
   REAL,    DIMENSION( ims:ime, 1:mosaic_cat,jms:jme ), INTENT(INOUT), OPTIONAL :: DETENTION_STORAGEXY_mosaic
   REAL,    DIMENSION( ims:ime,             jms:jme ), OPTIONAL, INTENT(OUT  ) ::  RUNONSFXY ! Accumulated Surface runon [mm] Added by Aaron A. [
   REAL,    DIMENSION( ims:ime,1:mosaic_cat,jms:jme ), OPTIONAL, INTENT(OUT  ) ::  RUNONSFXY_mosaic ! Accumulated Surface runon [mm] Added by Aaron A.
-  REAL,   DIMENSION( ims:ime, 1:num_soil_layers*mosaic_cat, jms:jme),  INTENT(INOUT), OPTIONAL :: VOL_FLUX_SMXY_mosaic !fractional soil moisture volume pulled from sharing
+  REAL,    DIMENSION( ims:ime, 1:num_soil_layers*mosaic_cat, jms:jme),  INTENT(INOUT), OPTIONAL :: VOL_FLUX_SMXY_mosaic !fractional soil moisture volume pulled from sharing
   REAL,   DIMENSION( ims:ime, 1:mosaic_cat       ,jms:jme),  INTENT(INOUT), OPTIONAL :: VOL_FLUX_RUNONXY_mosaic
+  real :: farea2
+  INTEGER :: mosaic_i
 !-------------------------------------------------
 ! End of  Noah-MP and HUE mosaic related variables are added to declaration  (Aaron A.)
 !-------------------------------------------------
@@ -2147,6 +2149,14 @@ CONTAINS
                  shalwater_z0,water_depth,shalwater_depth,           &
                  scm_force_flux,sf_surface_physics  )
          ELSE
+         
+         write(*,*) 'OUTSIDE WRAPPER'
+         if(i_start(ij) == 1) then 
+             if(j_start(ij) == 1) then
+                 write(*,*) 't_phy' , t_phy(1,1,1), 'p_phy',p_phy(1,1,1)
+             endif
+         endif
+         
          CALL SFCLAYREV(u_phytmp,v_phytmp,t_phy,qv_curr,&
                p_phy,dz8w,cp,g,rcp,r_d,xlv,psfc,chs,chs2,cqs2,cpm, &
                znt,ust,pblh,mavail,zol,mol,regime,psim,psih,fm,fhh, &
@@ -3158,7 +3168,14 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
            if(HYDRO_dt .ge. 0) HYDRO_dt = dtbl
 #endif
            CALL wrf_debug(100,'in NOAHMP DRV MOSAIC DRIVER')
-
+                        write(*,*) 'BEFORE NOAHMPHUE'
+                               
+                               if(i_start(ij) == 1) then 
+                                 if(j_start(ij) == 1) then
+                                     write(*,*) 'DZ8W' , DZ8W(1,1,1), 'TVXY',TVXY(1,1), 'TGXY',TGXY(1,1)
+                                     write(*,*) 'CMXY' , CMXY(1,1), 'CHXY',CHXY(1,1), 'TSK',TSK(1,1)
+                                 endif
+                             endif
 
            IF ( PRESENT( TSK_mosaic ) .AND. PRESENT( HFX_mosaic ) ) THEN
            CALL NOAHMPLSM_MOSAIC_HUE(ITIMESTEP,        YR,   JULIAN_IN,   COSZEN,XLAT,XLONG, & ! IN : Time/Space-related
@@ -3277,10 +3294,20 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
                                    mh_urb2d,     stdh_urb2d,       lf_urb2d,                             & !SLUCM
                                    th_phy,            rho,          p_phy,        ust,                   & !I multi-layer urban
                                    gmt,                                                                  & !I multi-layer urban MODIFIED BY AARON A.
-                                   RUNONSFXY,RUNONSFXY_mosaic,DETENTION_STORAGEXY,                       &
+                                   RUNONSFXY,RUNONSFXY_mosaic,DETENTION_STORAGEXY, DETENTION_STORAGEXY_mosaic,                       &
                                    VOL_FLUX_RUNONXY_mosaic, VOL_FLUX_SMXY_mosaic,                        &
-                                    MP_RAINC = RAINCV, MP_RAINNC = RAINNCV, MP_SHCV = RAINSHV, MP_SNOW = SNOWNCV, MP_GRAUP = GRAUPELNCV, MP_HAIL = HAILNCV)! HUE SPECIFIC VARIABLES
-                                ELSE
+                                   MP_RAINC = RAINCV, MP_RAINNC = RAINNCV, MP_SHCV = RAINSHV, MP_SNOW = SNOWNCV, MP_GRAUP = GRAUPELNCV, MP_HAIL = HAILNCV)! HUE SPECIFIC VARIABLES
+                               write(*,*) 'AFTER NOAHMPHUE'
+                               
+                               if(i_start(ij) == 1) then 
+                                 if(j_start(ij) == 1) then
+                                     write(*,*) 'DZ8W' , DZ8W(1,1,1), 'TVXY',TVXY(1,1), 'TGXY',TGXY(1,1)
+                                     write(*,*) 'CMXY' , CMXY(1,1), 'CHXY',CHXY(1,1), 'TSK',TSK(1,1)
+                                 endif
+                             endif
+
+                               
+                               ELSE
                                  CALL wrf_error_fatal('Lacking arguments for NOAHMPLSM Mosaic in surface driver')
                                 ENDIF
                             
@@ -3560,19 +3587,19 @@ ENDIF ! mosaic
                  ENDIF
                    TH2(I,J) = T2(I,J)*(1.E5/PSFC(I,J))**RCP
 !             ELSEIF (IVGTYP(I,J) == ISURBAN .OR. IVGTYP(I,J) == ISICE .OR. FVEGXY(I,J) == 0.0 ) THEN
-              ELSEIF((iopt_mos.eq.0).and.(IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. & ! adjusted by Aaron A. for mosiac call
+               ELSEIF( IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. &
                       IVGTYP(I,J) == LCZ_3      .or. IVGTYP(I,J) == LCZ_4 .or. IVGTYP(I,J) == LCZ_5 .or. &
                       IVGTYP(I,J) == LCZ_6      .or. IVGTYP(I,J) == LCZ_7 .or. IVGTYP(I,J) == LCZ_8 .or. &
                       IVGTYP(I,J) == LCZ_9      .or. IVGTYP(I,J) == LCZ_10 .or. IVGTYP(I,J) == LCZ_11 .or. &
-                     (IVGTYP(I,J) == ISICE .AND. XICE(I,J) .LT. XICE_THRESHOLD))) THEN
+                     (IVGTYP(I,J) == ISICE .AND. XICE(I,J) .LT. XICE_THRESHOLD)) THEN
 
                    Q2(I,J)  = Q2MBXY(I,J)
                    T2(I,J)  = T2MBXY(I,J)
                    TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
-               ELSE
-                  T2(I,J)  = FVEGXY(I,J)*T2MVXY(I,J) + (1.-FVEGXY(I,J))*T2MBXY(I,J)
-                  Q2(I,J)  = FVEGXY(I,J)*Q2MVXY(I,J) + (1.-FVEGXY(I,J))*Q2MBXY(I,J)
-                  TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
+              ELSE
+                 T2(I,J)  = FVEGXY(I,J)*T2MVXY(I,J) + (1.-FVEGXY(I,J))*T2MBXY(I,J)
+                 Q2(I,J)  = FVEGXY(I,J)*Q2MVXY(I,J) + (1.-FVEGXY(I,J))*Q2MBXY(I,J)
+                 TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
               ENDIF
            ENDDO
            ENDDO
@@ -3584,7 +3611,7 @@ ENDIF ! mosaic
 !             i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte    )
 
 !jref: sfc diagnostics end
-      IF(IOPT_mos.eq.0) THEN
+      
          IF(SF_URBAN_PHYSICS.eq.1) THEN
            DO j=j_start(ij),j_end(ij)                             !urban
              DO i=i_start(ij),i_end(ij)                           !urban
@@ -3608,7 +3635,7 @@ ENDIF ! mosaic
              ENDDO                                                !urban
            ENDDO                                                  !urban
          ENDIF
-       ENDIF !unsure if this is correct
+    
 
          IF((SF_URBAN_PHYSICS.eq.2).OR.(SF_URBAN_PHYSICS.eq.3)) THEN
            DO j=j_start(ij),j_end(ij)                             !urban
