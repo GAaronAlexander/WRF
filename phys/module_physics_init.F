@@ -3879,7 +3879,7 @@ CALL lsm_mosaic_init(IVGTYP,config_flags%ISWATER,config_flags%ISURBAN,config_fla
                         TGRL_URB3D_mosaic, SMR_URB3D_mosaic,                                  &
                         DRELR_URB2D_mosaic, DRELB_URB2D_mosaic, DRELG_URB2D_mosaic,           &
                         FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic, FLXHUMG_URB2D_mosaic,     &
-                        DETENTION_STORAGEXY_mosaic, VOL_FLUX_SMXY_mosaic, VOL_FLUX_RUNONXY_mosaic,      &
+                        DETENTION_STORAGEXY_mosaic,      &
 #if ( NMM_CORE == 1 )
                                                                                     Z0, &            ! Added by Aaron A. (Following Dan Li)
 #else

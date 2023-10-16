@@ -443,8 +443,9 @@ IF (grid%sppt_on==1) then
                               ids, ide, jds, jde, 1, config_flags%num_pert_3d, &
                               ims, ime, jms, jme, 1, config_flags%num_pert_3d  )
        END DO Loop_multi_perturb
+     IF ( wrf_dm_on_monitor() ) CLOSE (stochpert_unit) ! aaron a. 
      ENDIF  If_multi_perturb
-     IF ( wrf_dm_on_monitor() ) CLOSE (stochpert_unit)
+!     IF ( wrf_dm_on_monitor() ) CLOSE (stochpert_unit)
 
 
 ! Initialize Stochastic Parameter Perturbations to convection scheme

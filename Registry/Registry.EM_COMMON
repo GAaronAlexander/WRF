@@ -1015,24 +1015,23 @@ state    real   CSAND_PX         ij     misc        1         -      rh       "C
 state    real   FMSAND_PX        ij     misc        1         -      rh       "FMSAND_PX"     "Fine-medium sand perent for PX LSM"    "fraction"
 
 # sfclay PBL variables
-i1      real   PSIM           ij     misc        1         -     -         "PSIM"                "SIMILARITY FUNCTION FOR MOMENTUM"     ""
-i1      real   PSIH           ij     misc        1         -     -         "PSIH"                "SIMILARITY FUNCTION FOR HEAT"         ""
-state   real   FM             ij     misc        1         -     -         "FM"                  "INTEGRATED FUNCTION FOR MOMENTUM"     ""
-state   real   FH             ij     misc        1         -     -         "FH"                  "INTEGRATED FUNCTION FOR HEAT"         ""
+i1      real   PSIM           ij     misc        1         -     h         "PSIM"                "SIMILARITY FUNCTION FOR MOMENTUM"     ""
+i1      real   PSIH           ij     misc        1         -     h         "PSIH"                "SIMILARITY FUNCTION FOR HEAT"         ""
+state   real   FM             ij     misc        1         -     h         "FM"                  "INTEGRATED FUNCTION FOR MOMENTUM"     ""
+state   real   FH             ij     misc        1         -     h         "FH"                  "INTEGRATED FUNCTION FOR HEAT"         ""
 state   real   WSPD           ij     misc        1         -     -         "WSPD"                "Wind Speed At Lowest Model Level (may contain vconv)"           "m s-1"
-i1      real   GZ1OZ0         ij     misc        1         -     -         "GZ1OZ0"              "LOG OF Z1 over Z0"                     ""
-state   real   BR             ij     misc        1         -     -         "BR"                  "Bulk Richardson"                       ""
-state   real   ZOL            ij     misc        1         -     -         "ZOL"                 "z/L"                                   ""
+i1      real   GZ1OZ0         ij     misc        1         -     h         "GZ1OZ0"              "LOG OF Z1 over Z0"                     ""
+state   real   BR             ij     misc        1         -     h         "BR"                  "Bulk Richardson"                       ""
+state   real   ZOL            ij     misc        1         -     h         "ZOL"                 "z/L"                                   ""
 
 # ysupbl variables for grims shallow convection
-state   real   WSTAR_YSU      ij     misc        1         -     -        "WSTAR_YSU"           "mixed-layer velocity scale from ysupbl" "m/s"
-state   real   DELTA_YSU      ij     misc        1         -     -        "DELTA_YSU"           "entrainment layer depth from ysupbl"    "m"
+state   real   WSTAR_YSU      ij     misc        1         -     h        "WSTAR_YSU"           "mixed-layer velocity scale from ysupbl" "m/s"
+state   real   DELTA_YSU      ij     misc        1         -     h        "DELTA_YSU"           "entrainment layer depth from ysupbl"    "m"
 
 # EEPS PBL  scheme
 state   real   pep_pbl        ikj    misc        1         -     hr        "PEP_PBL"            "TKE dissipation rate from EEPS"    "m2 s-3"
 state   real   pek_adv        ikjftb  scalar      1         -      i0rusdf=(bdy_interp:dt) "pek_adv"       "TKE from EEPS"      "m2 s-2"
 state   real   pep_adv        ikjftb  scalar      1         -      i0rusdf=(bdy_interp:dt) "pep_adv"       "TKE dissipating rate from EEPS"      "m2 s-3"
-
 # MYJ PBL variables; GBM PBL: EXCH_H, EXCH_M
 state    real   EXCH_H          ikj     misc        1         Z     r        "EXCH_H"               "SCALAR EXCHANGE COEFFICIENTS "                "m2 s-1"
 state    real   EXCH_M          ikj     misc        1         Z     r        "EXCH_M"               "EXCHANGE COEFFICIENTS "                       "m2 s-1"
@@ -1051,7 +1050,7 @@ state   real   V10E             ij     misc        1         -     hdu       "V1
 
 #BSINGH - For CuP
 #~wig: added real pbl level index for output tests
-state   real   AKPBL            ij     misc        1         -      r        "AKPBL"                  "LEVEL OF PBL TOP"                             ""
+state   real   AKPBL            ij     misc        1         -      rh        "AKPBL"                  "LEVEL OF PBL TOP"                             ""
 #BSINGH - ENDS
 state   real   TSHLTR           ij     misc        1         -      r        "TSHLTR"                "SHELTER THETA FROM MYJ"                       "K"
 state   real   QSHLTR           ij     misc        1         -      r        "QSHLTR"                "SHELTER SPECIFIC HUMIDITY FROM MYJ"           "kg kg-1"
@@ -1678,7 +1677,7 @@ state    real  SWDOWN           ij      misc        1         -      rhd      "S
 state    real  SWDOWN2          ij      misc        1         -      rhd      "SWDOWN2"               "DOWNWARD SHORT WAVE FLUX AT GROUND SURFACE FROM FARMS"   "W m-2"
 state    real  SWDOWNC          ij      misc        1         -      -        "SWDOWNC"               "DOWNWARD CLEAR-SKY SHORT WAVE FLUX AT GROUND SURFACE"           "W m-2"
 state    real  SWDOWNC2         ij      misc        1         -      rhd      "SWDOWNC2"               "CLEAR-SKY DOWNWARD SHORT WAVE FLUX AT GROUND SURFACE FROM FARMS" "W m-2"
-state    real  GSW              ij      misc        1         -      rd       "GSW"                   "NET SHORT WAVE FLUX AT GROUND SURFACE"           "W m-2"
+state    real  GSW              ij      misc        1         -      rhd       "GSW"                   "NET SHORT WAVE FLUX AT GROUND SURFACE"           "W m-2"
 state    real  GLW              ij      misc        1         -      rhd      "GLW"                   "DOWNWARD LONG WAVE FLUX AT GROUND SURFACE"            "W m-2"
 state    real  SWNORM           ij      misc        1         -      rhd      "SWNORM"                "NORMAL SHORT WAVE FLUX AT GROUND SURFACE (SLOPE-DEPENDENT)"           "W m-2"
 state    real  diffuse_frac     ij      misc        1         -      rd       "DIFFUSE_FRAC"          "DIFFUSE FRACTION OF SURFACE SHORTWAVE IRRADIANCE"       ""
@@ -1948,7 +1947,7 @@ state    real  UST              ij      misc        1         -      rh       "U
 state    real  USTM             ij      misc        1         -      r        "USTM"                  "U* IN SIMILARITY THEORY WITHOUT VCONV"        "m s-1"
 i1       real  HOL              ij      misc        1         -      -        "HOL"                   "PBL HEIGHT OVER MONIN-OBUKHOV LENGTH"         ""
 state    real  RMOL             ij      misc        1         -      r        "RMOL"                  "1./Monin Ob. Length"                      ""
-state    real  MOL              ij      misc        1         -      r        "MOL"                   "T* IN SIMILARITY THEORY"                      "K"
+state    real  MOL              ij      misc        1         -      rh        "MOL"                   "T* IN SIMILARITY THEORY"                      "K"
 state    real  PBLH             ij      misc        1         -      rh       "PBLH"                  "PBL HEIGHT"         "m"
 state    real  CAPG             ij      misc        1         -      r        "CAPG"                  "HEAT CAPACITY FOR SOIL"                       "J K-1 m-3"
 state    real  THC              ij      misc        1         -      r        "THC"                   "THERMAL INERTIA"                              "Cal cm-2 K-1 s-0.5"
@@ -1957,7 +1956,7 @@ state    real  QFX              ij      misc        1         -      rh       "Q
 state    real  LH               ij      misc        1         -      rh       "LH"                    "LATENT HEAT FLUX AT THE SURFACE"              "W m-2"
 state    real  ACHFX            ij      misc        1         -      rhdu     "ACHFX"                 "ACCUMULATED UPWARD HEAT FLUX AT THE SURFACE"  "J m-2"
 #BSINGH - Added WSTAR for CuP scheme
-state    real  WSTAR            ij      misc        1         -      -        "WSTAR"                 "DEARDORFF CONVECTIVE VELOCITY SCALE"          "m s-1"
+state    real  WSTAR            ij      misc        1         -      h        "WSTAR"                 "DEARDORFF CONVECTIVE VELOCITY SCALE"          "m s-1"
 state    real  ACLHF            ij      misc        1         -      rhdu     "ACLHF"                 "ACCUMULATED UPWARD LATENT HEAT FLUX AT THE SURFACE"  "J m-2"
 state    real  FLHC             ij      misc        1         -      r        "FLHC"                  "SURFACE EXCHANGE COEFFICIENT FOR HEAT"       ""
 state    real  FLQC             ij      misc        1         -      r        "FLQC"                  "SURFACE EXCHANGE COEFFICIENT FOR MOISTURE"   ""
@@ -1975,7 +1974,7 @@ state    real  SNOWC            ij      misc        1         -      i012rhd=(in
 state    real  dfi_SNOWC        ij      misc        1         -      r        "SNOWC_dfi"             "FLAG INDICATING SNOW COVERAGE (1 FOR SNOW COVER)"         ""
 state    real  MAVAIL           ij      misc        1         -      r        "MAVAIL"                "SURFACE MOISTURE AVAILABILITY"                ""
 
-state   real   tkesfcf          ij      misc        1         -      r        "tkesfcf"               "TKE AT THE SURFACE"                           "m2 s-2"
+state   real   tkesfcf          ij      misc        1         -      rh        "tkesfcf"               "TKE AT THE SURFACE"                           "m2 s-2"
 state    real   sr             ij      dyn_em      1         -      irh       "sr" "fraction of frozen precipitation"
 state    real   potevp         ij      dyn_em      1         -       r        "potevp" "accumulated potential evaporation" "m"
 state    real   snopcx         ij      dyn_em      1         -       r        "snopcx" "snow phase change heat flux" "W m-2"

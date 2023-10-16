@@ -171,7 +171,7 @@ CONTAINS
      &          ,smcwtdxy_mosaic, rechxy_mosaic, deeprechxy_mosaic, smoiseq_mosaic,TGRL_URB3D_mosaic,SMR_URB3D_mosaic,CMR_SFCDIF_mosaic,CHR_SFCDIF_mosaic &
      &          ,CMC_SFCDIF_mosaic,CHC_SFCDIF_mosaic,CMGR_SFCDIF_mosaic, CHGR_SFCDIF_mosaic, XXXR_URB2D_mosaic,XXXB_URB2D_mosaic, XXXG_URB2D_mosaic, XXXC_URB2D_mosaic       &
      &          ,CMCR_URB2D_mosaic,TGR_URB2D_mosaic, DRELR_URB2D_mosaic, DRELB_URB2D_mosaic,DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic       &
-     &          ,FLXHUMG_URB2D_mosaic                                                                                                &
+     &          ,FLXHUMG_URB2D_mosaic, t2mvxy_mosaic, t2mbxy_mosaic, q2mvxy_mosaic, q2mbxy_mosaic, fvegxy_mosaic, ecanxy_mosaic,edirxy_mosaic, etranxy_mosaic &
 #endif                 
      &          ,runonsfxy,runonsfxy_mosaic, DETENTION_STORAGEXY,DETENTION_STORAGEXY_mosaic,VOL_FLUX_RUNONXY_mosaic                 &
      &          ,VOL_FLUX_SMXY_mosaic &
@@ -1247,20 +1247,20 @@ CONTAINS
   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: rechxy_mosaic
 
  !Variables that are NOAH MP output
-  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: t2mvxy_mosaic
- !  REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: t2mbxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: q2mvxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: q2mbxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: t2mvxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: t2mbxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: q2mvxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: q2mbxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: tradxy_mosaic
 ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: neexy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: gppxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: nppxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: fvegxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: fvegxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: runsfxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: runsbxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ecanxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: edirxy_mosaic
- ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: etranxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ecanxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: edirxy_mosaic
+   REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: etranxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: fsaxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: firaxy_mosaic
  ! REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: aparxy_mosaic
@@ -1382,8 +1382,8 @@ CONTAINS
   REAL,    DIMENSION( ims:ime,1:mosaic_cat,jms:jme ), OPTIONAL, INTENT(OUT  ) ::  RUNONSFXY_mosaic ! Accumulated Surface runon [mm] Added by Aaron A.
   REAL,    DIMENSION( ims:ime, 1:num_soil_layers*mosaic_cat, jms:jme),  INTENT(INOUT), OPTIONAL :: VOL_FLUX_SMXY_mosaic !fractional soil moisture volume pulled from sharing
   REAL,   DIMENSION( ims:ime, 1:mosaic_cat       ,jms:jme),  INTENT(INOUT), OPTIONAL :: VOL_FLUX_RUNONXY_mosaic
-  real :: farea2
-  INTEGER :: mosaic_i
+  real :: farea2, URBFRAC_dummy
+  INTEGER :: mosaic_i, trigger
 !-------------------------------------------------
 ! End of  Noah-MP and HUE mosaic related variables are added to declaration  (Aaron A.)
 !-------------------------------------------------
@@ -2150,12 +2150,6 @@ CONTAINS
                  scm_force_flux,sf_surface_physics  )
          ELSE
          
-         write(*,*) 'OUTSIDE WRAPPER'
-         if(i_start(ij) == 1) then 
-             if(j_start(ij) == 1) then
-                 write(*,*) 't_phy' , t_phy(1,1,1), 'p_phy',p_phy(1,1,1)
-             endif
-         endif
          
          CALL SFCLAYREV(u_phytmp,v_phytmp,t_phy,qv_curr,&
                p_phy,dz8w,cp,g,rcp,r_d,xlv,psfc,chs,chs2,cqs2,cpm, &
@@ -3168,14 +3162,6 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
            if(HYDRO_dt .ge. 0) HYDRO_dt = dtbl
 #endif
            CALL wrf_debug(100,'in NOAHMP DRV MOSAIC DRIVER')
-                        write(*,*) 'BEFORE NOAHMPHUE'
-                               
-                               if(i_start(ij) == 1) then 
-                                 if(j_start(ij) == 1) then
-                                     write(*,*) 'DZ8W' , DZ8W(1,1,1), 'TVXY',TVXY(1,1), 'TGXY',TGXY(1,1)
-                                     write(*,*) 'CMXY' , CMXY(1,1), 'CHXY',CHXY(1,1), 'TSK',TSK(1,1)
-                                 endif
-                             endif
 
            IF ( PRESENT( TSK_mosaic ) .AND. PRESENT( HFX_mosaic ) ) THEN
            CALL NOAHMPLSM_MOSAIC_HUE(ITIMESTEP,        YR,   JULIAN_IN,   COSZEN,XLAT,XLONG, & ! IN : Time/Space-related
@@ -3296,15 +3282,10 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
                                    gmt,                                                                  & !I multi-layer urban MODIFIED BY AARON A.
                                    RUNONSFXY,RUNONSFXY_mosaic,DETENTION_STORAGEXY, DETENTION_STORAGEXY_mosaic,                       &
                                    VOL_FLUX_RUNONXY_mosaic, VOL_FLUX_SMXY_mosaic,                        &
+                                   t2mvxy_mosaic,t2mbxy_mosaic,q2mvxy_mosaic,q2mbxy_mosaic,              &
+                                   fvegxy_mosaic,ecanxy_mosaic,edirxy_mosaic,etranxy_mosaic,             &
                                    MP_RAINC = RAINCV, MP_RAINNC = RAINNCV, MP_SHCV = RAINSHV, MP_SNOW = SNOWNCV, MP_GRAUP = GRAUPELNCV, MP_HAIL = HAILNCV)! HUE SPECIFIC VARIABLES
-                               write(*,*) 'AFTER NOAHMPHUE'
                                
-                               if(i_start(ij) == 1) then 
-                                 if(j_start(ij) == 1) then
-                                     write(*,*) 'DZ8W' , DZ8W(1,1,1), 'TVXY',TVXY(1,1), 'TGXY',TGXY(1,1)
-                                     write(*,*) 'CMXY' , CMXY(1,1), 'CHXY',CHXY(1,1), 'TSK',TSK(1,1)
-                                 endif
-                             endif
 
                                
                                ELSE
@@ -3587,15 +3568,31 @@ ENDIF ! mosaic
                  ENDIF
                    TH2(I,J) = T2(I,J)*(1.E5/PSFC(I,J))**RCP
 !             ELSEIF (IVGTYP(I,J) == ISURBAN .OR. IVGTYP(I,J) == ISICE .OR. FVEGXY(I,J) == 0.0 ) THEN
-               ELSEIF( IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. &
+               ELSEIF ((IOPT_MOS==0).and.( IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. & !add mosaic and HUE switch 
                       IVGTYP(I,J) == LCZ_3      .or. IVGTYP(I,J) == LCZ_4 .or. IVGTYP(I,J) == LCZ_5 .or. &
                       IVGTYP(I,J) == LCZ_6      .or. IVGTYP(I,J) == LCZ_7 .or. IVGTYP(I,J) == LCZ_8 .or. &
                       IVGTYP(I,J) == LCZ_9      .or. IVGTYP(I,J) == LCZ_10 .or. IVGTYP(I,J) == LCZ_11 .or. &
-                     (IVGTYP(I,J) == ISICE .AND. XICE(I,J) .LT. XICE_THRESHOLD)) THEN
+                     (IVGTYP(I,J) == ISICE .AND. XICE(I,J) .LT. XICE_THRESHOLD)) )THEN
 
                    Q2(I,J)  = Q2MBXY(I,J)
                    T2(I,J)  = T2MBXY(I,J)
                    TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
+              ELSEIF ((IOPT_MOS == 1).and.( IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. & !add mosaic and HUE switch 
+                      IVGTYP(I,J) == LCZ_3      .or. IVGTYP(I,J) == LCZ_4 .or. IVGTYP(I,J) == LCZ_5 .or. &
+                      IVGTYP(I,J) == LCZ_6      .or. IVGTYP(I,J) == LCZ_7 .or. IVGTYP(I,J) == LCZ_8 .or. &
+                      IVGTYP(I,J) == LCZ_9      .or. IVGTYP(I,J) == LCZ_10 .or. IVGTYP(I,J) == LCZ_11 .or. &
+                     (IVGTYP(I,J) == ISICE .AND. XICE(I,J) .LT. XICE_THRESHOLD)) ) THEN
+                     
+                     if (Q2MVXY(I,J) == -9999.) then ! this means that all of the mosaic landcovers were actually some sort of urban so we treat like urban
+                          Q2(I,J)  = Q2MBXY(I,J)
+                          T2(I,J)  = T2MBXY(I,J)
+                          TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
+                    else
+                           T2(I,J)  = FVEGXY(I,J)*T2MVXY(I,J) + (1.-FVEGXY(I,J))*T2MBXY(I,J) ! accounts for the urban 
+                           Q2(I,J)  = FVEGXY(I,J)*Q2MVXY(I,J) + (1.-FVEGXY(I,J))*Q2MBXY(I,J)
+                           TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
+                    endif
+                    
               ELSE
                  T2(I,J)  = FVEGXY(I,J)*T2MVXY(I,J) + (1.-FVEGXY(I,J))*T2MBXY(I,J)
                  Q2(I,J)  = FVEGXY(I,J)*Q2MVXY(I,J) + (1.-FVEGXY(I,J))*Q2MBXY(I,J)
@@ -3612,7 +3609,7 @@ ENDIF ! mosaic
 
 !jref: sfc diagnostics end
       
-         IF(SF_URBAN_PHYSICS.eq.1) THEN
+         IF((SF_URBAN_PHYSICS.eq.1).AND.(IOPT_MOS.EQ.0))THEN
            DO j=j_start(ij),j_end(ij)                             !urban
              DO i=i_start(ij),i_end(ij)                           !urban
                IF( IVGTYP(I,J) == ISURBAN    .or. IVGTYP(I,J) == LCZ_1 .or. IVGTYP(I,J) == LCZ_2 .or. &
@@ -3631,6 +3628,39 @@ ENDIF ! mosaic
                  GZ1OZ0(I,J) = GZ1OZ0_URB2D(I,J)                  !urban
                  AKHS(I,J) = CHS(I,J)                             !urban
                  AKMS(I,J) = AKMS_URB2D(I,J)                      !urban
+               END IF                                             !urban
+             ENDDO                                                !urban
+           ENDDO                                                  !urban
+         ELSEIF((SF_URBAN_PHYSICS.eq.1).AND.(IOPT_MOS.EQ.1))THEN
+           DO j=j_start(ij),j_end(ij)                             !urban
+             DO i=i_start(ij),i_end(ij)!urban
+             ! derive URBFRAC_dummy
+             URBFRAC_dummy = 0.
+             trigger = 0
+             DO mosaic_i= 1,mosaic_cat
+                IF( (mosaic_cat_index(I,mosaic_i,J) == ISURBAN)   .or. (mosaic_cat_index(I,mosaic_i,J) == LCZ_1) .or. &
+                    (mosaic_cat_index(I,mosaic_i,J) == LCZ_2)     .or. (mosaic_cat_index(I,mosaic_i,J) == LCZ_3) .or. &
+                    (mosaic_cat_index(I,mosaic_i,J) == 42)        .or. (mosaic_cat_index(I,mosaic_i,J) == 44)    .or. &
+                    (mosaic_cat_index(I,mosaic_i,J) == 45) )THEN
+
+                  URBFRAC_dummy = URBFRAC_dummy + landusef2(I,mosaic_i,J) ! total grid urbfraction (including new landtypes
+                  trigger = 1
+                ENDIF
+              END DO
+              
+               if (trigger == 1) THEN
+                 Q2(I,J)  = (FVEGXY(I,J)*Q2MVXY(I,J) + (1.-FVEGXY(I,J))*Q2MBXY(I,J))*(1.-URBFRAC_dummy) +   &
+                             Q2_URB2D(I,J)*URBFRAC_dummy
+                 T2(I,J)  = (FVEGXY(I,J)*T2MVXY(I,J) + (1.-FVEGXY(I,J))*T2MBXY(I,J))*(1.-URBFRAC_dummy) +   &
+                             (TH2_URB2D(i,j)/((1.E5/PSFC(i,j))**RCP))*URBFRAC_dummy
+                 TH2(I,J) = T2(i,j)*(1.E5/PSFC(i,j))**RCP
+                 U10(I,J)  = U10(I,J) * (1-URBFRAC_dummy) + U10_URB2D(I,J) *(URBFRAC_dummy)                     !urban
+                 V10(I,J)  = V10(I,J) * (1-URBFRAC_dummy) + V10_URB2D(I,J) *(URBFRAC_dummy)                     !urban
+                 PSIM(I,J) = PSIM(I,J) * (1-URBFRAC_dummy) + PSIM_URB2D(I,J)* (URBFRAC_dummy)                     !urban
+                 PSIH(I,J) = PSIH(I,J) * (1-URBFRAC_dummy) + PSIH_URB2D(I,J)* (URBFRAC_dummy)                       !urban
+                 GZ1OZ0(I,J) = GZ1OZ0(I,J)  * (1-URBFRAC_dummy) + GZ1OZ0_URB2D(I,J) * (URBFRAC_dummy)                 !urban
+                 AKHS(I,J) = CHS(I,J)              !urban
+                 AKMS(I,J) = AKMS(I,J) * (1-URBFRAC_dummy) + URBFRAC_dummy * AKMS_URB2D(I,J)                      !urban
                END IF                                             !urban
              ENDDO                                                !urban
            ENDDO                                                  !urban

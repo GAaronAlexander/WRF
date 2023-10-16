@@ -828,7 +828,7 @@ contains
   LOGICAL                             :: CROPLU      ! flag to identify croplands
   REAL                                :: SIFCUK      ! Sprinkler fraction for unknown irrigation methods
   REAL :: FB
-
+  REAL :: ETRAN2 ! extra ETRAN to account for what was pulled out in HUE
 ! add canopy heat storage (C.He added based on GY Niu's communication)
   REAL                          , INTENT(OUT)    :: CANHS ! canopy heat storage change w/m2
 
@@ -961,7 +961,7 @@ END IF ! end the HUE change to the water balance
         FVEG = SHDMAX
         IF(FVEG <= 0.05) FVEG = 0.05
      ENDIF
-     IF(parameters%urban_flag .OR. VEGTYP == parameters%ISBARREN) FVEG = 0.0
+     IF((parameters%urban_flag) .OR. (VEGTYP == parameters%ISBARREN ).or.(VEGTYP.eq.42).or.(VEGTYP.eq.44)) FVEG = 0.0
      IF(ELAI+ESAI == 0.0) FVEG = 0.0
 
 ! Calling dynamic irrigation scheme-prasanth
@@ -977,10 +977,12 @@ END IF ! end the HUE change to the water balance
      MIFAC = MIFRA
      FIFAC = FIFRA
 ! If OPT_IRRM = 0 and if methods are unknown for certain area, then use sprinkler irrigation method
+
+     if (OPT_IRR .NE. 0) THEN
      IF((OPT_IRRM .EQ. 0) .AND. (SIFAC .EQ. 0.0) .AND. (MIFAC .EQ. 0.0) .AND. (FIFAC .EQ. 0.0) .AND. (IRRFRA .GE. parameters%IRR_FRAC)) THEN
           SIFAC = 1.0
      END IF
-
+     ENDIF
 ! choose method based on user namelist choice
      IF(OPT_IRRM .EQ. 1) THEN
         SIFAC = 1.0
@@ -1094,7 +1096,7 @@ END IF ! end the HUE change to the water balance
                  QSNSUB ,QSNFRO ,QSUBC  ,QFROC  ,QFRZC  ,QMELTC , &
                  QEVAC  ,QDEWC  ,ACC_QINSUR ,ACC_QSEVA,ACC_ETRANI, &
                 RUNONSRF, GREEN_ROOF , NSOIL_GR, DETENTION_STORAGE, PRECIPRATIO_GR, EXPRUN_GR, & ! optional green roof values
-                COEF_GR, STORAGEMAX_GR, DETENTIONSTORAGEMAX_GR, FAREA, VOL_FLUX_SM, VOL_FLUX_RUNON &
+                COEF_GR, STORAGEMAX_GR, DETENTIONSTORAGEMAX_GR, FAREA, VOL_FLUX_SM, VOL_FLUX_RUNON, ETRAN2 &
 #ifdef WRF_HYDRO
                         ,sfcheadrt,WATBLED                        &
 #endif            
@@ -1148,7 +1150,7 @@ END IF ! end the HUE change to the water balance
                  IRMIRATE, IRFIRATE, ACC_DWATER, ACC_PRCP, ACC_ECAN, &
                  ACC_ETRAN, ACC_EDIR,                                 &
                  RUNONSRF, VEGTYP, GREEN_ROOF,NSOIL_GR,DETENTION_STORAGE,FAREA, &
-                 SMC_dummy)   !in ( Except ERRWAT, which is out )
+                 SMC_dummy,ETRAN2)   !in ( Except ERRWAT, which is out )
 
   ! These are for the urban to turfgrass and urban to permeable pavement
   IF (OPT_HUE.eq.1) THEN
@@ -1160,7 +1162,7 @@ END IF ! end the HUE change to the water balance
 
 ! urban - jref
     QFX = ETRAN + ECAN + EDIR
-    IF ( parameters%urban_flag ) THEN
+    IF (( parameters%urban_flag ) .OR. (VEGTYP.eq.42) .OR. (VEGTYP.eq.44) .OR. (VEGTYP.eq.45))  THEN
        QSFC = QFX/(RHOAIR*CH) + QAIR
        Q2B = QSFC
     END IF
@@ -1554,7 +1556,6 @@ ENDIF   ! CROPTYPE == 0
       MAXLIQ =  parameters%CH2OP * (ELAI+ ESAI)
 
 ! average interception and throughfall
-
       IF((ELAI+ ESAI) .GT. 0.0) THEN
          QINTR  = FVEG * RAIN * FP  ! interception capability
          QINTR  = MIN(QINTR, (MAXLIQ - CANLIQ)/DT * (1.0-EXP(-RAIN*DT/MAXLIQ)) )
@@ -1670,7 +1671,7 @@ ENDIF   ! CROPTYPE == 0
                     SAV    ,SAG    ,FSRV   ,FSRG   ,ZWT    ,PAH    , &
                     PAHV   ,PAHG   ,PAHB   ,FIRR   ,CANHS  ,         &
                     IRMIRATE, IRFIRATE, ACC_DWATER, ACC_PRCP, ACC_ECAN, &
-                    ACC_ETRAN, ACC_EDIR, RUNONSRF, VEGTYP, GREEN_ROOF, NSOIL_GR, DETENTION_STORAGE, FAREA,SMC2 )
+                    ACC_ETRAN, ACC_EDIR, RUNONSRF, VEGTYP, GREEN_ROOF, NSOIL_GR, DETENTION_STORAGE, FAREA,SMC2 , ETRAN2)
 ! --------------------------------------------------------------------------------------------------
 ! check surface energy balance and water balance
 ! --------------------------------------------------------------------------------------------------
@@ -1740,7 +1741,8 @@ ENDIF   ! CROPTYPE == 0
   INTEGER                        , INTENT(IN), OPTIONAL :: NSOIL_GR
   REAL                           , INTENT(IN), OPTIONAL :: FAREA
   REAL, DIMENSION(       1:NSOIL), INTENT(IN), OPTIONAL :: SMC2    !soil moisture (ice + liq.) [m3/m3]
-!local
+  REAL                           , INTENT(IN), OPTIONAL :: ETRAN2
+!loca
   INTEGER                                     :: IZ     !do-loop index
   REAL                                        :: END_WB !water storage at end of a timestep [mm]
   !KWM REAL                                        :: ERRWAT !error in water balance [mm/timestep]
@@ -1814,7 +1816,7 @@ END_WB = 0.0
      IF (OPT_HUE.eq.1) THEN
        !This is the coupled tree/impermeable pavements
        IF (VEGTYP.eq.41) THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA 
+         END_WB = CANLIQ + CANICE + SNEQV + WA
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1822,7 +1824,7 @@ END_WB = 0.0
          !has been completely disconnected (meaning all water will be
          ! input to an adjacent turf grass or vegitatation type (43))
        ELSE IF( (VEGTYP.eq.42).or.(VEGTYP.eq.45) ) THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA + RUNONSRF*DT
+         END_WB = CANLIQ + CANICE + SNEQV + WA
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1833,7 +1835,7 @@ END_WB = 0.0
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
        ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.43) )THEN
-         END_WB = CANLIQ + CANICE + SNEQV + WA  - RUNONSRF*DT
+         END_WB = CANLIQ + CANICE + SNEQV + WA
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
@@ -1868,9 +1870,29 @@ END_WB = 0.0
       ACC_EDIR   = ACC_EDIR   + EDIR * DT        ! accumulated soil evapo
 
       if (calculate_soil) then
+      IF (OPT_HUE.eq.1) then
+         IF( (VEGTYP.eq.42).or.(VEGTYP.eq.45) ) THEN
          ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
-                                ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN)
+                                ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN - RUNONSRF*DT )
+         ELSE IF ( (VEGTYP.eq.44).or.(VEGTYP.eq.43) ) THEN
+              ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
+                                ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN + RUNONSRF*DT)
+        ELSE IF  ( (VEGTYP.eq.41))  THEN !ETRAN removed because it is not accounted for in this landytpe. Will be in 47
+             ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
+                                ACC_EDIR - RUNSRF - RUNSUB - QTLDRN + RUNONSRF*DT)
+        ELSE IF ((VEGTYP.eq.47)) THEN
+        ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
+                                ACC_ETRAN - ETRAN2*DT - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN + RUNONSRF*DT)
 
+        else 
+              ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
+                                ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN) 
+       endif ! end hue errwat
+
+       else 
+          ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
+                                ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN)
+      endif 
 #ifndef WRF_HYDRO
         IF(ABS(ERRWAT) > 0.1) THEN
            if (ERRWAT > 0) then
@@ -1880,18 +1902,18 @@ END_WB = 0.0
            endif
            write(message, *) 'ERRWAT =',ERRWAT, "kg m{-2} timestep{-1}"
            call wrf_message(trim(message))
-           WRITE(*,*) 'OLD THINGS     ACCDWATER', old_dwater
-           WRITE(*,*) 'ACC_PRCP', old_prcp, 'ACC_ECAN',old_ecan
-           WRITE(*,*) 'ACC_ETRAN', old_etran, 'ACC_EDIR', old_edir
+           WRITE(*,*) 'OLD THINGS     ACCDWATER', ACC_DWATER
+           WRITE(*,*) 'ACC_PRCP', ACC_PRCP, 'ACC_ECAN',ACC_ECAN
+           WRITE(*,*) 'ACC_ETRAN', ACC_ETRAN, 'ACC_EDIR', ACC_EDIR
            WRITE(*,*) 'VEGTYP', VEGTYP, 'SMC2', SMC2, 'SMC', SMC
-           WRITE(*,*) 'RUNSRF', RUNSRF, 'CANLIQ',CANLIQ
+           WRITE(*,*) 'RUNSRF', RUNSRF, 'CANLIQ',CANLIQ, 'RUNSUB', RUNSUB
            WRITE(*,*) 'END_WB', END_WB, 'BEG_WB', BEG_WB
            WRITE(*,*) 'CANICE', CANICE, 'SNEQV', SNEQV
+           WRITE(*,*) ILOC, JLOC
+            IF(OPT_HUE.eq.1) WRITE(*,*) RUNONSRF*DT
            IF(OPT_HUE.eq.1) THEN
-           write(*,*) 'RUNONSRF', RUNONSRF
              WRITE(message, &
              '("     I      J     END-BEG     PRCP     IRMIRATE     IRFIRATE      ECAN     EDIR    ETRAN   RUNSRF   RUNSUB   ZWT   QTLDRN  RUNONSRF   DETENTION_STORAGE ")')
-             call wrf_message(trim(message))
              WRITE(message,'(i6,i6,f10.3,10f10.5)')ILOC,JLOC,ACC_DWATER,ACC_PRCP,IRMIRATE*1000.0,&
                   IRFIRATE*1000.0,ACC_ECAN,ACC_EDIR,ACC_ETRAN,RUNSRF,RUNSUB,ZWT,QTLDRN, RUNONSRF*DT, DETENTION_STORAGE*1000.
              call wrf_message(trim(message))
@@ -2267,6 +2289,8 @@ END_WB = 0.0
        ELSE
          Z0MG = 0.01
        END IF
+     ELSE IF(VEGTYP.EQ.41) THEN ! added by aaron a.  
+       Z0MG = 0.05 * (1.0-FSNO) + FSNO * parameters%Z0SNO 
      ELSE
        Z0MG = Z0 * (1.0-FSNO) + FSNO * parameters%Z0SNO
      END IF
@@ -2277,6 +2301,7 @@ END_WB = 0.0
      IF(VEG) THEN
         Z0M  = parameters%Z0MVT
         ZPD  = 0.65 * parameters%HVT
+        IF(VEGTYP.eq.43) ZPD = 0.
         IF(SNOWH.GT.ZPD) ZPD  = SNOWH
      ELSE
         Z0M  = Z0MG
@@ -2291,12 +2316,13 @@ END_WB = 0.0
        Z0M  = Z0MG
        ZPD  = ZPDG
      END IF
-
+     
+     
      ZLVL = MAX(ZPD,parameters%HVT) + ZREF
      IF(ZPDG >= ZLVL) ZLVL = ZPDG + ZREF
      ! Need to add a ZLVL for wind
+     UR   = UR*LOG(ZLVL/Z0M)/LOG(10./Z0M)       !input UR is at 10m
      !UR   = UR*LOG(ZLVL/Z0M)/LOG(10./Z0M)       !input UR is at 10m
-!     UR   = UR*LOG(ZLVL/Z0M)/LOG(10./Z0M)       !input UR is at 10m
 
 ! canopy wind absorption coeffcient
 
@@ -2325,6 +2351,8 @@ END_WB = 0.0
      EMV = 1.0 - EXP(-(ELAI+ESAI)/1.0)
      IF (ICE == 1) THEN
        EMG = 0.98*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO  ! move hard-coded snow emissivity as a global parameter to MPTABLE
+     ELSE IF ((parameters%urban_flag).OR.(VEGTYP.eq.42).OR.(VEGTYP.eq.44).OR.(VEGTYP.eq.45).or.(VEGTYP.eq.41 )) THEN
+     EMG = 0.9*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO !aaron a. from oke urban climates table 5.2
      ELSE
        EMG = parameters%EG(IST)*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO
      END IF
@@ -2388,7 +2416,7 @@ END_WB = 0.0
      END IF
 
 ! urban - jref
-      IF ((parameters%urban_flag .and. SNOWH == 0. ).or.(VEGTYP.eq.42 .and. SNOWH.eq.0).or.(VEGTYP.eq.44. .and. SNOWH.eq.0)) THEN !modified by Aaron Alexander
+      IF ((parameters%urban_flag .and. SNOWH == 0. ).or.(VEGTYP.eq.42 .and. SNOWH.eq.0).or.(VEGTYP.eq.44 .and. SNOWH.eq.0).or.(VEGTYP.eq.41 .and. SNOWH.eq.0)) THEN !modified by Aaron Alexander
          RSURF = 1.E6
       ENDIF
 
@@ -2476,7 +2504,7 @@ END_WB = 0.0
         SSOIL = FVEG * GHV       + (1.0 - FVEG) * GHB
         FCEV  = EVC
         FCTR  = TR
-	    PAH   = FVEG * PAHG      + (1.0 - FVEG) * PAHB   + PAHV
+	PAH   = FVEG * PAHG      + (1.0 - FVEG) * PAHB   + PAHV
         TG    = FVEG * TGV       + (1.0 - FVEG) * TGB
         T2M   = FVEG * T2MV      + (1.0 - FVEG) * T2MB
         TS    = FVEG * TV        + (1.0 - FVEG) * TGB
@@ -2526,7 +2554,7 @@ END_WB = 0.0
     ! When we're computing a TRAD, subtract from the emitted IR the
     ! reflected portion of the incoming LWDN, so we're just
     ! considering the IR originating in the canopy/ground system.
-    
+
     TRAD = ( ( FIRE - (1-EMISSI)*LWDN ) / (EMISSI*SB) ) ** 0.25
 
     ! Old TRAD calculation not taking into account Emissivity:
@@ -2658,13 +2686,15 @@ IF (GREEN_ROOF) THEN !add green roof (only a single layer)
 ELSE ! Normal
     DO  IZ = 1, NSOIL
        SICE(IZ)  = SMC(IZ) - SH2O(IZ)
-       HCPCT(IZ) = SH2O(IZ)*CWAT + (1.0-parameters%SMCMAX(IZ))*parameters%CSOIL &
+       IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN ! aaron al
+          HCPCT(IZ) = 4.5E+6
+       ELSE
+         HCPCT(IZ) = SH2O(IZ)*CWAT + (1.0-parameters%SMCMAX(IZ))*parameters%CSOIL &
                 + (parameters%SMCMAX(IZ)-SMC(IZ))*CPAIR + SICE(IZ)*CICE
+       END IF
        CALL TDFCND (parameters,IZ,DF(IZ), SMC(IZ), SH2O(IZ))
     END DO
 END IF
-
-    
 IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN !added by Aaron A.
        DO IZ = 1,NSOIL
          DF(IZ) = 3.24
@@ -2880,7 +2910,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 
     DF = AKE * (THKSAT - THKDRY) + THKDRY
 
-    
+
   end subroutine TDFCND
 
 !== begin radiation ================================================================================
@@ -3520,8 +3550,18 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
   DO IB = 1, NBAND
         INC = MAX(0.11-0.40*SMC(1), 0.0)
         IF (IST .EQ. 1)  THEN                     !soil
-           ALBSOD = MIN(parameters%ALBSAT(IB)+INC,parameters%ALBDRY(IB))
-           ALBSOI = ALBSOD
+           IF(( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
+                IF (IB == 1) THEN
+                   ALBSOD = 0.05
+                   ALBSOI = 0.05
+                ELSE
+                   ALBSOD = 0.02
+                   ALBSOI = 0.02
+                ENDIF
+           ELSE
+                ALBSOD = MIN(parameters%ALBSAT(IB)+INC,parameters%ALBDRY(IB))
+                ALBSOI = ALBSOD
+           ENDIF
         ELSE IF (TG .GT. TFRZ) THEN               !unfrozen lake, wetland
            ALBSOD = 0.06/(MAX(0.01,COSZ)**1.7 + 0.15)
            ALBSOI = 0.06
@@ -4257,8 +4297,13 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
           EVC = MIN(CANICE*LATHEAV/DT,EVC)
 	END IF
         ! canopy heat capacity
-        HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
-
+        IF ((VEGTYP.eq.43)) THEN ! Aaron a. 
+        HCV = 0.05*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        ELSE IF ((VEGTYP.eq.41).or.(VEGTYP.eq.47)) THEN
+        HCV = 0.09*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        ELSE 
+        HCV  = 0.05*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        endif 
         B   = SAV-IRC-SHC-EVC-TR+PAHV                          !additional w/m2
 !        A   = FVEG*(4.0*CIR*TV**3 + CSH + (CEV+CTR)*DESTV) !volumetric heat capacity
         A   = FVEG*(4.0*CIR*TV**3 + CSH + (CEV+CTR)*DESTV) + HCV/DT  ! total volumetric heat capacity, add canopy heat capacity, more stable
@@ -4555,9 +4600,10 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 
         CIR = EMG*SB
         CGH = 2.0*DF(ISNOW+1)/DZSNSO(ISNOW+1)
+
 ! -----------------------------------------------------------------
       loop3: DO ITER = 1, NITERB  ! begin stability iteration
-        
+
         IF(ITER == 1) THEN
             Z0H = Z0M
         ELSE
@@ -4571,7 +4617,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
                        MOZ    ,MOZSGN ,FM     ,FH     ,FM2,FH2, & !inout
                        CM     ,CH     ,FV     ,CH2     )          !out
         ENDIF
-        
+
         IF(OPT_SFC == 2) THEN
           CALL SFCDIF2(parameters,ITER   ,Z0M    ,TGB    ,THAIR  ,UR     , & !in
                        ZLVL   ,ILOC   ,JLOC   ,         & !in
@@ -4617,6 +4663,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
         SHB   = CSH * (TGB        - SFCTMP      )
         EVB   = CEV * (ESTG*RHSUR - EAIR        )
         GHB   = CGH * (TGB        - STC(ISNOW+1))
+
         B     = SAG-IRB-SHB-EVB-GHB+PAHB
         A     = 4.0*CIR*TGB**3 + CSH + CEV*DESTG + CGH
         DTG   = B/A
@@ -4625,7 +4672,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
         SHB = SHB + CSH*DTG
         EVB = EVB + CEV*DESTG*DTG
         GHB = GHB + CGH*DTG
-        
+
 ! update ground surface temperature
         TGB = TGB + DTG
 
@@ -4678,11 +4725,15 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
          Q2B   = QSFC - EVB/(LATHEA*RHOAIR)*(1.0/CQ2B + RSURF)
        ENDIF
        IF (parameters%urban_flag) Q2B = QSFC
+       IF (IVGTYP.eq.41) Q2B = QSFC
+       IF (IVGTYP.eq.42) Q2B = QSFC !Added by Aaron A.
+       IF (IVGTYP.eq.44) Q2B = QSFC ! ADDED by Aaron A.
+       IF (IVGTYP.eq.45) Q2B = QSFC ! ADDED by Aaron A.
+
      END IF
 
 ! update CH
      CH = EHB
-     
 
   END SUBROUTINE BARE_FLUX
 
@@ -6234,7 +6285,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
                     QSNSUB ,QSNFRO ,QSUBC  ,QFROC  ,QFRZC  ,QMELTC , &
                     QEVAC  ,QDEWC  ,ACC_QINSUR,ACC_QSEVA ,ACC_ETRANI, &
                     RUNONSRF, GREEN_ROOF, NSOIL_GR, DETENTION_STORAGE, PRECIPRATIO_GR, EXPRUN_GR, & ! Optional Green Roof
-                    COEF_GR, STORAGEMAX_GR, DETENTIONSTORAGEMAX_GR, FAREA, VOL_FLUX_SM, VOL_FLUX_RUNON &
+                    COEF_GR, STORAGEMAX_GR, DETENTIONSTORAGEMAX_GR, FAREA, VOL_FLUX_SM, VOL_FLUX_RUNON,ETRAN2 &
 #ifdef WRF_HYDRO
                         ,sfcheadrt ,WATBLED                          &
 #endif
@@ -6383,6 +6434,7 @@ INTEGER, INTENT(IN), OPTIONAL       :: NSOIL_GR
  REAL, DIMENSION(1:NSOIL),        INTENT(INOUT), OPTIONAL :: VOL_FLUX_SM !volume flux of soil (per layer) pulled from tree sharing soil moisture in Urban Environment Aaron A.
  REAL,                            INTENT(INOUT), OPTIONAL :: VOL_FLUX_RUNON !volumen flux of run-on from one grid to the another grid (for paired land types) Aaron A.
  REAL,                            INTENT(INOUT) :: RUNONSRF !runon in mm/s Added by Aaron A.
+ REAL,                            INTENT(INOUT), OPTIONAL :: ETRAN2
 
 ! ----------------------------------------------------------------------
 ! initialize
@@ -6405,9 +6457,13 @@ END IF
 ! that is located over the pavement)
 IF (OPT_HUE.eq.1) THEN
   IF (VEGTYP.EQ.47) THEN
+     ETRAN2 = 0.
      DO IZ = 1, parameters%NROOT !Aaron A.
       ETRANI(IZ) = ETRANI(IZ) + VOL_FLUX_SM(IZ)/(FAREA*DX*DX*DT)
+      ETRAN2 = ETRAN2 +  1000* VOL_FLUX_SM(IZ)/(FAREA*DX*DX*DT) 
      ENDDO
+  ELSE
+      ETRAN2 = 0.
   END IF
   VOL_FLUX_SM(1:NSOIL) = 0.
 END IF
@@ -6470,7 +6526,7 @@ IF (OPT_HUE.eq.1) THEN
   IF(ISNOW == 0) THEN
      QINSUR = QINSUR+(QSNBOT + QSDEW + QRAIN) * 0.001 +( RUNONSRF * 0.001) !Aaron A.
   ELSE
-     QINSUR = QINSUR+(QSNBOT + QSDEW) * 0.001
+     QINSUR = QINSUR+(QSNBOT + QSDEW) * 0.001 + ( RUNONSRF * 0.001) !Aaron A.
   ENDIF
 
 
@@ -8100,8 +8156,9 @@ END IF ! Green BRANCH AARON A.
        INFMAX = INFMAX * FCR
 
 ! jref for urban areas
-!       IF ( parameters%urban_flag ) INFMAX == INFMAX * 0.05
+!      IF ( parameters%urban_flag ) INFMAX == INFMAX * 0.05
 
+       
        CALL WDFCND2 (parameters,WDF,WCND,SH2O(1),SICEMAX,1)
        INFMAX = MAX (INFMAX,WCND)
        INFMAX = MIN (INFMAX,PX)

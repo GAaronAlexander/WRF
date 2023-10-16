@@ -1109,7 +1109,9 @@ BENCH_START(surf_driver_tim)
      &        , XXXC_URB2D_mosaic=grid%XXXC_URB2D_mosaic, CMCR_URB2D_mosaic=grid%CMCR_URB2D_mosaic       &
      &        , TGR_URB2D_mosaic=grid%TGR_URB2D_mosaic, DRELR_URB2D_mosaic=grid%DRELR_URB2D_mosaic, DRELB_URB2D_mosaic=grid%DRELB_URB2D_mosaic       &
      &        , DRELG_URB2D_mosaic=grid%DRELG_URB2D_mosaic, FLXHUMR_URB2D_mosaic=grid%FLXHUMR_URB2D_mosaic, FLXHUMB_URB2D_mosaic=grid%FLXHUMB_URB2D_mosaic       &
-     &        , FLXHUMG_URB2D_mosaic=grid%FLXHUMG_URB2D_mosaic &
+     &        , FLXHUMG_URB2D_mosaic=grid%FLXHUMG_URB2D_mosaic, t2mvxy_mosaic=grid%t2mvxy_mosaic, t2mbxy_mosaic=grid%t2mbxy_mosaic                    &
+     &        , q2mvxy_mosaic=grid%q2mvxy_mosaic, q2mbxy_mosaic=grid%q2mbxy_mosaic, fvegxy_mosaic=grid%fvegxy_mosaic                                  &
+     &        , ecanxy_mosaic=grid%ecanxy_mosaic, edirxy_mosaic=grid%edirxy_mosaic, etranxy_mosaic=grid%etranxy_mosaic                                &
 
 ! Noah-MP HUE optional variables
 #endif
