@@ -3015,6 +3015,7 @@ end function checkIfHarvest
                             ids,ide,        jds,jde,        kds,kde,                        &
                             ims,ime,        jms,jme,        kms,kme,                        &
                             its,ite,        jts,jte,        kts,kte,                        &
+                             FIRAXY, FSAXY, CANHSXY, PAHXY,& !Additional Energy Balance terms added by Aaron A.
                          cmr_sfcdif,     chr_sfcdif,     cmc_sfcdif,                        &
 	                 chc_sfcdif,    cmgr_sfcdif,    chgr_sfcdif,                        &
                            tr_urb2d,       tb_urb2d,       tg_urb2d,                        & !H urban
@@ -3221,6 +3222,10 @@ end function checkIfHarvest
      REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT) :: Q2_URB2D
      REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT) :: AKMS_URB2D
      REAL,           DIMENSION( ims:ime, jms:jme ), INTENT(OUT) :: UST_URB2D
+     REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme),  INTENT(INOUT) ::FIRAXY
+REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme),  INTENT(INOUT) :: FSAXY
+REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme),  INTENT(INOUT) :: CANHSXY
+REAL, OPTIONAL, DIMENSION( ims:ime, jms:jme),  INTENT(INOUT) :: PAHXY
 
 
 ! output variables urban --> lsm
@@ -3514,7 +3519,7 @@ ILOOP : DO I = its, ite
     QFX(I,J)      = FRC_URB2D(I,J) * LH_KINEMATIC_URB &
                        + (1-FRC_URB2D(I,J))* QFX(I,J)                                  ![kg/m/m/s]
     LH(I,J)       = FRC_URB2D(I,J) * LH_URB  + (1-FRC_URB2D(I,J)) * LH(I,J)            ![W/m/m]
-    GRDFLX(I,J)   = FRC_URB2D(I,J) * (G_URB) + (1-FRC_URB2D(I,J)) * GRDFLX(I,J)        ![W/m/m]
+    GRDFLX(I,J)   = FRC_URB2D(I,J) *-1*(G_URB) + (1-FRC_URB2D(I,J)) * GRDFLX(I,J)        ![W/m/m]
     TSK(I,J)      = FRC_URB2D(I,J) * TS_URB  + (1-FRC_URB2D(I,J)) * TSK(I,J)           ![K]
 !    Q1            = QSFC(I,J)/(1.0+QSFC(I,J))
 !    Q1            = FRC_URB2D(I,J) * QS_URB  + (1-FRC_URB2D(I,J)) * Q1                 ![-]
@@ -3524,6 +3529,11 @@ ILOOP : DO I = its, ite
 !    QSFC(I,J)     = Q1/(1.0-Q1)
                    QSFC(I,J)= FRC_URB2D(I,J)*QS_URB+(1-FRC_URB2D(I,J))*QSFC(I,J)               !!   QSFC(I,J)=QSFC1D
     UST(I,J)      = FRC_URB2D(I,J) * UST_URB + (1-FRC_URB2D(I,J)) * UST(I,J)     ![m/s]
+              ! Changing urban energy to ensure balance in mosaic / HUE
+              FIRAXY(I,J) = FIRAXY(I,J)*(1-FRC_URB2D(I,J)) + -1*(LLG_URB-LW_URB)*(FRC_URB2D(I,J)) ! longwave
+              FSAXY(I,J) = FSAXY(I,J)*(1-FRC_URB2D(I,J)) +(SSG_URB-SW_URB)*(FRC_URB2D(I,J))         
+              CANHSXY(I,J) = CANHSXY(I,J)*(1-FRC_URB2D(I,J)) +0*FRC_URB2D(I,J)
+              PAHXY(I,J) = PAHXY(I,J)*(1-FRC_URB2D(I,J))+0*FRC_URB2D(I,J)
 
 ! Renew Urban State Variables
 
@@ -4927,6 +4937,7 @@ SUBROUTINE NOAHMPLSM_MOSAIC_HUE(ITIMESTEP,        YR,   JULIAN,   COSZIN,XLAT,XL
                           VOL_FLUX_RUNONXY_mosaic, VOL_FLUX_SMXY_mosaic,                        &
                           t2mvxy_mosaic,t2mbxy_mosaic,q2mvxy_mosaic,q2mbxy_mosaic,              &
                           fvegxy_mosaic,ecanxy_mosaic,edirxy_mosaic,etranxy_mosaic,             &
+                          pahxy_mosaic,canhsxy_mosaic,firaxy_mosaic,fsaxy_mosaic, &
                           MP_RAINC, MP_RAINNC, MP_SHCV, MP_SNOW, MP_GRAUP, MP_HAIL )! HUE SPECIFIC VARIABLES
 
 
@@ -5746,8 +5757,8 @@ type(noahmp_parameters) :: parameters
       REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ecanxy_mosaic
       REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: edirxy_mosaic
       REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: etranxy_mosaic
-      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: fsaxy_mosaic
-      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: firaxy_mosaic
+      REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: fsaxy_mosaic
+      REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: firaxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: aparxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: psnxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: savxy_mosaic
@@ -5779,7 +5790,7 @@ type(noahmp_parameters) :: parameters
       REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: rs_mosaic
 
       ! These are additional variables
-     ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  PAHXY_mosaic     ! precipitation advected heat
+      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  PAHXY_mosaic     ! precipitation advected heat
       !REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  PAHGXY_mosaic    ! precipitation advected heat
       !REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  PAHBXY_mosaic    ! precipitation advected heat
       !REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  PAHVXY_mosaic    ! precipitation advected heat
@@ -5808,7 +5819,7 @@ type(noahmp_parameters) :: parameters
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  EFLXBXY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SOILENERGY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SNOWENERGY_mosaic
-     ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  CANHSXY_mosaic
+     REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  CANHSXY_mosaic
      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_DWATERXY_mosaic
      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_PRCPXY_mosaic
      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_ECANXY_mosaic
@@ -5948,7 +5959,7 @@ type(noahmp_parameters) :: parameters
 
      !HUE noah-mp variables
      INTEGER, DIMENSION( ims:ime, jms:jme ) ::    IVGTYP_dominant
-     INTEGER ::  mosaic_i, URBAN_METHOD, zo_avg_option,LAYER
+     INTEGER ::  mosaic_i, URBAN_METHOD,zo_avg_option, LAYER, mocat_forloop 
      REAL :: FAREA,FAREA2
      LOGICAL :: IPRINT_mosaic !may not be needed Aaron A.
      INTEGER, PARAMETER                   :: NSOIL_GR = 1
@@ -7130,14 +7141,28 @@ type(noahmp_parameters) :: parameters
           IF( IVGTYP(I,J) == ISURBAN_TABLE .or. IVGTYP(I,J) == LCZ_1_TABLE .or. IVGTYP(I,J) == LCZ_2_TABLE .or. &
           IVGTYP(I,J) == LCZ_3_TABLE   .or. IVGTYP(I,J) == LCZ_4_TABLE .or. IVGTYP(I,J) == LCZ_5_TABLE .or. &
           IVGTYP(I,J) == LCZ_6_TABLE   .or. IVGTYP(I,J) == LCZ_7_TABLE .or. IVGTYP(I,J) == LCZ_8_TABLE .or. &
-          IVGTYP(I,J) == LCZ_9_TABLE   .or. IVGTYP(I,J) == LCZ_10_TABLE .or. IVGTYP(I,J) == LCZ_11_TABLE ) THEN
+          IVGTYP(I,J) == LCZ_9_TABLE   .or. IVGTYP(I,J) == LCZ_10_TABLE.or. IVGTYP(I,J) == LCZ_11_TABLE .or. IVGTYP(I,J) == 42 ) THEN
 
 
             IF (IVGTYP(I,J) == ISURBAN_TABLE) UTYPE_URB = 2
             IF (IVGTYP(I,J) == LCZ_1_TABLE) UTYPE_URB = 1
             IF (IVGTYP(I,J) == LCZ_2_TABLE) UTYPE_URB = 2
             IF (IVGTYP(I,J) == LCZ_3_TABLE) UTYPE_URB = 3
-          
+            
+            IF (IVGTYP(I,J) == 42) THEN 
+                 DO mocat_forloop  =1, mosaic_cat
+                 IF (mosaic_cat_index(I,mocat_forloop,J) == LCZ_1_TABLE) THEN 
+                        UTYPE_URB = 1
+                 ELSE IF (mosaic_cat_index(I,mocat_forloop,J) == LCZ_2_TABLE) THEN
+                        UTYPE_URB = 2
+                ELSE IF (mosaic_cat_index(I,mocat_forloop,J) == LCZ_3_TABLE) THEN
+                        UTYPE_URB = 3
+                END IF 
+                END DO 
+             END IF
+
+
+
        
             !UTYPE_URB = UTYPE_URB2D(I,J) !urban type (low, high or industrial)
               ! Begin addition by Aaron A. on 27 May 2022.
@@ -7312,7 +7337,7 @@ type(noahmp_parameters) :: parameters
               QFX(I,J)      = FRC_URB2D(I,J) * LH_KINEMATIC_URB &
                                  + (1-FRC_URB2D(I,J))* QFX(I,J)                                  ![kg/m/m/s]
               LH(I,J)       = FRC_URB2D(I,J) * LH_URB  + (1-FRC_URB2D(I,J)) * LH(I,J)            ![W/m/m]
-              GRDFLX(I,J)   = FRC_URB2D(I,J) * (G_URB) + (1-FRC_URB2D(I,J)) * GRDFLX(I,J)        ![W/m/m]
+              GRDFLX(I,J)   = FRC_URB2D(I,J) * -1*(G_URB) + (1-FRC_URB2D(I,J)) * GRDFLX(I,J)        ![W/m/m]
               TSK(I,J)      = FRC_URB2D(I,J) * TS_URB  + (1-FRC_URB2D(I,J)) * TSK(I,J)           ![K]
           !    Q1            = QSFC(I,J)/(1.0+QSFC(I,J))
           !    Q1            = FRC_URB2D(I,J) * QS_URB  + (1-FRC_URB2D(I,J)) * Q1                 ![-]
@@ -7323,6 +7348,12 @@ type(noahmp_parameters) :: parameters
                              QSFC(I,J)= FRC_URB2D(I,J)*QS_URB+(1-FRC_URB2D(I,J))*QSFC(I,J)               !!   QSFC(I,J)=QSFC1D
               UST(I,J)      = FRC_URB2D(I,J) * UST_URB + (1-FRC_URB2D(I,J)) * UST(I,J)     ![m/s]
               ZNT(I,J)= EXP(FRC_URB2D(I,J)*ALOG(ZNT_URB)+(1-FRC_URB2D(I,J))* ALOG(ZNT(I,J)))   ! ADD BY DAN
+          ! Changing urban energy to ensure balance in mosaic / HUE
+              FIRAXY(I,J) = FIRA*(1-FRC_URB2D(I,J)) + -1*(LLG_URB -LW_URB)*(FRC_URB2D(I,J)) ! longwave
+              FSAXY(I,J) = FSA*(1-FRC_URB2D(I,J)) + (SSG_URB-SW_URB)*(FRC_URB2D(I,J))         
+              CANHSXY(I,J) = CANHS*(1-FRC_URB2D(I,J)) +0*FRC_URB2D(I,J)
+              PAHXY(I,J) = PAH*(1-FRC_URB2D(I,J))+0*FRC_URB2D(I,J)
+
           ! Renew Urban State Variables
 
               TR_URB2D(I,J) = TR_URB
@@ -7517,8 +7548,8 @@ type(noahmp_parameters) :: parameters
               ecanxy_mosaic(I,mosaic_i,J) = ECANXY(I,J)
               edirxy_mosaic(I,mosaic_i,J) = EDIRXY(I,J)
               etranxy_mosaic(I,mosaic_i,J) = ETRANXY(I,J)
-              ! fsaxy_mosaic(I,mosaic_i,J) = FSAXY(I,J)
-              ! firaxy_mosaic(I,mosaic_i,J) = FIRAXY(I,J)
+              fsaxy_mosaic(I,mosaic_i,J) = FSAXY(I,J)
+              firaxy_mosaic(I,mosaic_i,J) = FIRAXY(I,J)
               ! aparxy_mosaic(I,mosaic_i,J) = APARXY(I,J)
               ! psnxy_mosaic(I,mosaic_i,J) = PSNXY(I,J)
               ! savxy_mosaic(I,mosaic_i,J) = SAVXY(I,J)
@@ -7550,7 +7581,7 @@ type(noahmp_parameters) :: parameters
 
               !!! NEED TO ADD NEW VARIABLES
 
-              ! PAHXY_mosaic(I,mosaic_i,J) = PAHXY(I,J)
+               PAHXY_mosaic(I,mosaic_i,J) = PAHXY(I,J)
               ! PAHGXY_mosaic(I,mosaic_i,J) = PAHGXY(I,J)
               ! PAHBXY_mosaic(I,mosaic_i,J) = PAHBXY(I,J)    ! precipitation advected heat
               ! PAHVXY_mosaic(I,mosaic_i,J) = PAHVXY(I,J)    ! precipitation advected heat
@@ -7578,7 +7609,7 @@ type(noahmp_parameters) :: parameters
               ! EFLXBXY_mosaic(I,mosaic_i,J) = EFLXBXY(I,J)
               ! SOILENERGY_mosaic(I,mosaic_i,J) = SOILENERGY(I,J)
               ! SNOWENERGY_mosaic(I,mosaic_i,J) = SNOWENERGY(I,J)
-              ! CANHSXY_mosaic(I,mosaic_i,J) = CANHSXY(I,J)
+              CANHSXY_mosaic(I,mosaic_i,J) = CANHSXY(I,J)
               ACC_DWATERXY_mosaic(I,mosaic_i,J) = ACC_DWATERXY(I,J)
               ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
               ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)

@@ -2352,7 +2352,8 @@ END_WB = 0.0
      IF (ICE == 1) THEN
        EMG = 0.98*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO  ! move hard-coded snow emissivity as a global parameter to MPTABLE
      ELSE IF ((parameters%urban_flag).OR.(VEGTYP.eq.42).OR.(VEGTYP.eq.44).OR.(VEGTYP.eq.45).or.(VEGTYP.eq.41 )) THEN
-     EMG = 0.9*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO !aaron a. from oke urban climates table 5.2
+
+        EMG = 0.91*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO !aaron a. from oke urban climates table 5.2
      ELSE
        EMG = parameters%EG(IST)*(1.0-FSNO) + parameters%SNOW_EMIS*FSNO
      END IF
@@ -2686,8 +2687,22 @@ IF (GREEN_ROOF) THEN !add green roof (only a single layer)
 ELSE ! Normal
     DO  IZ = 1, NSOIL
        SICE(IZ)  = SMC(IZ) - SH2O(IZ)
-       IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN ! aaron al
-          HCPCT(IZ) = 4.5E+6
+       IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41)) THEN
+               if (VEGTYP.EQ.24) THEN 
+                       HCPCT(IZ) = 1.43E+6*5
+               else if ((VEGTYP.EQ.25).OR.(VEGTYP.EQ.13)) THEN
+                       HCPCT(IZ)  = 1.55E+6*5
+               else if (VEGTYP.EQ.26) THEN 
+                       HCPCT(IZ) = 1.66E+6*5
+               else
+                        HCPCT(IZ) = 1.95E+6*5
+               end if 
+       ELSE IF ((VEGTYP.EQ.41)) THEN 
+           HCPCT(IZ) = 1.95E+6*5
+       ELSE IF ((VEGTYP.EQ.42)) THEN 
+           HCPCT(IZ) = 1.48E+6*5
+       ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN ! aaron al
+          HCPCT(IZ) = 1.95E+6*5
        ELSE
          HCPCT(IZ) = SH2O(IZ)*CWAT + (1.0-parameters%SMCMAX(IZ))*parameters%CSOIL &
                 + (parameters%SMCMAX(IZ)-SMC(IZ))*CPAIR + SICE(IZ)*CICE
@@ -2695,11 +2710,38 @@ ELSE ! Normal
        CALL TDFCND (parameters,IZ,DF(IZ), SMC(IZ), SH2O(IZ))
     END DO
 END IF
-IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN !added by Aaron A.
-       DO IZ = 1,NSOIL
+
+IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41)) THEN
+        if (VEGTYP.EQ.24) THEN 
+         DO IZ = 1,NSOIL
+         DF(IZ) = 0.75*5  
+       END DO
+        else if ((VEGTYP.EQ.25).OR.(VEGTYP.EQ.13)) THEN
+         DO IZ = 1,NSOIL
+         DF(IZ) = 1.07*5
+       END DO
+       else if (VEGTYP.EQ.26) THEN
+        DO IZ = 1,NSOIL
+         DF(IZ) = 1.4*5
+       END DO
+       else 
+         DO IZ = 1,NSOIL
          DF(IZ) = 3.24
        END DO
-    ENDIF
+       end if 
+ELSE IF ((VEGTYP.EQ.41)) THEN
+        DO IZ = 1,NSOIL
+         DF(IZ) = 0.82*5
+       END DO
+ELSE IF ((VEGTYP.EQ.42)) THEN
+        DO IZ = 1,NSOIL
+         DF(IZ) = 0.971*5
+       END DO
+ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN ! aaron al
+       DO IZ = 1,NSOIL
+         DF(IZ) = 0.82*5
+       END DO
+END IF
 
 ! heat flux reduction effect from the overlying green canopy, adapted from
 ! section 2.1.2 of Peters-Lidard et al. (1997, JGR, VOL 102(D4)).
@@ -3550,18 +3592,43 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
   DO IB = 1, NBAND
         INC = MAX(0.11-0.40*SMC(1), 0.0)
         IF (IST .EQ. 1)  THEN                     !soil
-           IF(( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
                 IF (IB == 1) THEN
-                   ALBSOD = 0.05
-                   ALBSOI = 0.05
-                ELSE
-                   ALBSOD = 0.02
-                   ALBSOI = 0.02
+                        IF(( parameters%urban_flag).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.42)) THEN
+                                if (VEGTYP.EQ.24) THEN 
+                                        ALBSOD = 0.211
+                                        ALBSOI = 0.211
+                                else if ((VEGTYP.EQ.25).OR.(VEGTYP.EQ.13)) THEN
+                                        ALBSOD = 0.206
+                                        ALBSOI = 0.206
+                                else if (VEGTYP.EQ.26) THEN 
+                                        ALBSOD = 0.204
+                                        ALBSOI = 0.204
+                                 else
+                                        ALBSOD = 0.14
+                                        ALBSOI = 0.14
+                                 end if
+                        ELSE IF ((VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
+                                ALBSOD = 0.1
+                                ALBSOI = 0.1
+                        ELSE IF ((VEGTYP.EQ.42)) THEN 
+                                ALBSOD = 0.20
+                                ALBSOI = 0.20
+                        ELSE
+                                ALBSOD = MIN(parameters%ALBSAT(IB)+INC,parameters%ALBDRY(IB))
+                                ALBSOI = ALBSOD
+                        END IF
+                 ELSE
+                        IF(( parameters%urban_flag).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45).OR.(VEGTYP.EQ.42)) THEN 
+                                ALBSOD = 0.02
+                                ALBSOI = 0.02 
+
+                        ELSE
+
+                                ALBSOD = MIN(parameters%ALBSAT(IB)+INC,parameters%ALBDRY(IB))
+                                ALBSOI = ALBSOD
+                        END IF
+
                 ENDIF
-           ELSE
-                ALBSOD = MIN(parameters%ALBSAT(IB)+INC,parameters%ALBDRY(IB))
-                ALBSOI = ALBSOD
-           ENDIF
         ELSE IF (TG .GT. TFRZ) THEN               !unfrozen lake, wetland
            ALBSOD = 0.06/(MAX(0.01,COSZ)**1.7 + 0.15)
            ALBSOI = 0.06
@@ -4298,7 +4365,7 @@ IF (( parameters%urban_flag ).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.
 	END IF
         ! canopy heat capacity
         IF ((VEGTYP.eq.43)) THEN ! Aaron a. 
-        HCV = 0.05*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        HCV = 0.09*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE IF ((VEGTYP.eq.41).or.(VEGTYP.eq.47)) THEN
         HCV = 0.09*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE 
