@@ -497,8 +497,8 @@ contains
                    RAIN    , SNOW    , ACC_SSOIL, ACC_QINSUR, ACC_QSEVA      , & ! OUT
                    ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
                    ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR,         & ! INOUT
-                   SMC_dummy, SH2O_dummy, TURFGRASS_URB,BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
-                   DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON &
+                   SMC_dummy, SH2O_dummy, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
+                   DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON,TURFGRASS_URB &
 #ifdef WRF_HYDRO
                    ,SFCHEADRT, WATBLED                                         & ! IN/OUT :
 #endif
@@ -851,7 +851,7 @@ BEG_WB=0.0
 ! add check to see if green roof specific variables are present and the vegitation type is green roof, if not crash
 ! values are based on Locatelli et al. 2014 (single layer green roof)
 ! added by Aaron A.
-IF(OPT_HUE.eq.0) TURFGRASS_URB=0
+
 IF(OPT_HUE.eq.1) RUNONSRF = 0.0
   GREEN_ROOF = .false.
   IF(OPT_HUE.eq.1) THEN 
@@ -1050,7 +1050,7 @@ END IF ! end the HUE change to the water balance
     CALL PRECIP_HEAT(parameters,ILOC   ,JLOC   ,VEGTYP ,DT     ,UU     ,VV     , & !in
                      ELAI   ,ESAI   ,FVEG   ,IST    ,                 & !in
                      BDFALL ,RAIN   ,SNOW   ,FP     ,                 & !in
-                     CANLIQ ,CANICE ,TV     ,SFCTMP ,TG     , PRCP,        & !in
+                     CANLIQ ,CANICE ,TV     ,SFCTMP ,TG     ,         & !in
                      QINTR  ,QDRIPR ,QTHROR ,QINTS  ,QDRIPS ,QTHROS , & !out
                      PAHV   ,PAHG   ,PAHB   ,QRAIN  ,QSNOW  ,SNOWHIN, & !out
 	             FWET   ,CMC                                    )   !out
@@ -1485,7 +1485,7 @@ ENDIF   ! CROPTYPE == 0
   SUBROUTINE PRECIP_HEAT (parameters,ILOC   ,JLOC   ,VEGTYP ,DT     ,UU     ,VV     , & !in
                           ELAI   ,ESAI   ,FVEG   ,IST    ,                 & !in
                           BDFALL ,RAIN   ,SNOW   ,FP     ,                 & !in
-                          CANLIQ ,CANICE ,TV     ,SFCTMP ,TG     , PRCP,   & !in
+                          CANLIQ ,CANICE ,TV     ,SFCTMP ,TG     ,         & !in
                           QINTR  ,QDRIPR ,QTHROR ,QINTS  ,QDRIPS ,QTHROS , & !out
 			  PAHV   ,PAHG   ,PAHB   ,QRAIN  ,QSNOW  ,SNOWHIN, & !out
 			  FWET   ,CMC                                    )   !out
@@ -1519,7 +1519,6 @@ ENDIF   ! CROPTYPE == 0
 ! input & output
   REAL, INTENT(INOUT) :: CANLIQ  !intercepted liquid water (mm)
   REAL, INTENT(INOUT) :: CANICE  !intercepted ice mass (mm)
-  REAL, INTENT(INOUT) :: PRCP ! needed for hydrology fix mm/s Aaron A.
 
 ! output
   REAL, INTENT(OUT)   :: QINTR   !interception rate for rain (mm/s)
@@ -1547,9 +1546,6 @@ ENDIF   ! CROPTYPE == 0
   REAL                :: PAH_CG  !precipitation advected heat - canopy to ground (W/m2)
   REAL                :: PAH_AG  !precipitation advected heat - air to ground (W/m2)
   REAL                :: ICEDRIP !canice unloading
-  REAL                :: ExtraCanopyLiqOverflow ! how much water to add to PRCP if canopy is overflowing. Stops a hydrologic balance error
-  REAL                :: ExtraCanopyIceOverflow ! how much ice to add to PRCP if canopy is overflowing. Stops a hydrologic balance error 
-  
 ! --------------------------------------------------------------------
 ! initialization
 
@@ -1584,12 +1580,6 @@ ENDIF   ! CROPTYPE == 0
          QDRIPR = FVEG * RAIN - QINTR
          QTHROR = (1.0-FVEG) * RAIN
          CANLIQ=MAX(0.0,CANLIQ+QINTR*DT)
-         IF (CANLIQ.gt.MAXLIQ) THEN !aaron a. Threshold by max water available to hold in the canopy...
-             ExtraCanopyLiqOverflow = (CANLIQ - MAXLIQ)/DT
-             QDRIPR = QDRIPR+ ExtraCanopyLiqOverflow
-             CANLIQ = MAXLIQ
-             !PRCP = PRCP + ExtraCanopyLiqOverflow
-         endif   
       ELSE
          QINTR  = 0.0
          QDRIPR = 0.0
@@ -1623,12 +1613,6 @@ ENDIF   ! CROPTYPE == 0
          QDRIPS = (FVEG * SNOW - QINTS) + ICEDRIP
          QTHROS = (1.0-FVEG) * SNOW
          CANICE= MAX(0.0,CANICE + (QINTS - ICEDRIP)*DT)
-      IF (CANICE.gt.MAXSNO) THEN !aaron a. Threshold by max ice available to hold in the canopy...
-         ExtraCanopyIceOverflow = (CANICE - MAXSNO)/DT
-         QDRIPS = QDRIPS+ ExtraCanopyIceOverflow
-         CANICE = MAXSNO
-         !PRCP = PRCP + ExtraCanopyIceOverflow
-     endif
       ELSE
          QINTS  = 0.0
          QDRIPS = 0.0
@@ -2348,7 +2332,7 @@ END_WB = 0.0
      END IF
 
 ! special case for urban
-    !IF ((ILOC==93).and.(JLOC==56)) WRITE(*,*) 'TURFGRASS_URB', TURFGRASS_URB
+
      IF ((parameters%urban_flag).AND.(VEGTYP.ne.42).and.(VEGTYP.ne.44).and.(VEGTYP.ne.45) )THEN !Added by Aaron A.) THEN
        Z0MG = parameters%Z0MVT
        ZPDG  = 0.65 * parameters%HVT
@@ -2514,7 +2498,6 @@ END_WB = 0.0
 ! Surface temperatures of the ground and canopy and energy fluxes
     !WRITE(*,*) 'VEGTYP', VEGTYP, 'FVEG', FVEG, 'VEG', VEG, 'ZPD', ZPD
     IF (VEG .AND. FVEG > 0) THEN
-    !if (OPT_MOS == 0) THEN
     TGV = TG
     CMV = CM
     CHV = CH
@@ -2540,13 +2523,7 @@ END_WB = 0.0
                     SH2O,JULIAN, SWDOWN, PRCP, FB, FSR, GECROS1D)      ! Gecros
 !jref:end
     END IF
-    !if (OPT_MOS == 0) THEN
-    IF (VEG .AND. FVEG > 0) THEN
     TGB = TG
-    else
-    TGB = TGB
-    endif
-    !endif
     CMB = CM
     CHB = CH
     CALL BARE_FLUX (parameters,NSNOW   ,NSOIL   ,ISNOW   ,DT      ,SAG     , & !in
@@ -4354,7 +4331,6 @@ END IF
 
         AIR = -EMV*(1.0+(1.0-EMV)*(1.0-EMG))*LWDN - EMV*EMG*SB*TG**4
         CIR = (2.0-EMV*(1.0-EMG))*EMV*SB
-
 ! ---------------------------------------------------------------------------------------------
       loop1: DO ITER = 1, NITERC    !  begin stability iteration
 
@@ -4531,11 +4507,11 @@ END IF
 	END IF
         ! canopy heat capacity
         IF ((VEGTYP.eq.43)) THEN ! Aaron a. 
-        HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        HCV = 0.09*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE IF ((VEGTYP.eq.41).or.(VEGTYP.eq.47)) THEN
-        HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        HCV = 0.09*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE 
-        HCV  = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
+        HCV  = 0.05*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         endif 
         B   = SAV-IRC-SHC-EVC-TR+PAHV                          !additional w/m2
 !        A   = FVEG*(4.0*CIR*TV**3 + CSH + (CEV+CTR)*DESTV) !volumetric heat capacity
@@ -6667,8 +6643,6 @@ REAL, INTENT(INOUT), OPTIONAL       :: DETENTION_STORAGE
 LOGICAL, INTENT(IN), OPTIONAL       :: GREEN_ROOF
 INTEGER, INTENT(IN), OPTIONAL       :: NSOIL_GR
 
-
-
  REAL,                            INTENT(IN), OPTIONAL :: FAREA !fractional area of the paired land types for lateral transfers
  REAL, DIMENSION(1:NSOIL),        INTENT(INOUT), OPTIONAL :: VOL_FLUX_SM !volume flux of soil (per layer) pulled from tree sharing soil moisture in Urban Environment Aaron A.
  REAL,                            INTENT(INOUT), OPTIONAL :: VOL_FLUX_RUNON !volumen flux of run-on from one grid to the another grid (for paired land types) Aaron A.
@@ -6713,7 +6687,7 @@ END IF
                   FCEV   ,FCTR   ,ELAI   , & !in
                   ESAI   ,TG     ,FVEG   ,ILOC   , JLOC, & !in
                   BDFALL ,FROZEN_CANOPY  , & !in
-                  CANLIQ ,CANICE ,TV,                 & !inout
+                  CANLIQ ,CANICE ,TV     ,                 & !inout
                   CMC    ,ECAN   ,ETRAN  , & !out
                   FWET , QSUBC, QFROC, QFRZC, QMELTC, QEVAC, QDEWC ) !out
 
@@ -6906,7 +6880,7 @@ END IF
                        FCEV   ,FCTR   ,ELAI   , & !in
                        ESAI   ,TG     ,FVEG   ,ILOC   , JLOC , & !in
                        BDFALL ,FROZEN_CANOPY  ,  & !in
-                       CANLIQ ,CANICE ,TV,                 & !inout
+                       CANLIQ ,CANICE ,TV     ,                 & !inout
                        CMC    ,ECAN   ,ETRAN  , & !out
                        FWET , QSUBC, QFROC, QFRZC, QMELTC, QEVAC, QDEWC  )    !out
 
@@ -6934,7 +6908,6 @@ END IF
   REAL, INTENT(INOUT) :: CANLIQ  !intercepted liquid water (mm)
   REAL, INTENT(INOUT) :: CANICE  !intercepted ice mass (mm)
   REAL, INTENT(INOUT) :: TV      !vegetation temperature (k)
-  
 
 ! output
   REAL, INTENT(OUT)   :: CMC     !intercepted water (mm)
@@ -10341,10 +10314,10 @@ END SUBROUTINE RR2
 !-------------------------------------------------------------------------------
 ! adjust the incoming water based on the frozen state of the water.
     IF (FCR(1).gt.0.0) THEN
-        RUNOFF_FRZ = QINSUR*FCR(1)
-        QINSUR_MOD = QINSUR*(1-FCR(1))
+        RUNOFF_FRZ = QINSUR*FCR(1)/1000 
+        QINSUR_MOD = QINSUR*(1-FCR(1))/1000 
     ELSE
-        QINSUR_MOD = QINSUR
+        QINSUR_MOD = QINSUR/1000 
         RUNOFF_FRZ = 0.
    END IF
 !-------------------------------------------------------------------------------
