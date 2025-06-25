@@ -367,6 +367,8 @@ CONTAINS
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ECANXY
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ETRANXY
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_EDIRXY
+    !REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ERRWAT
+
 
     INTEGER,  INTENT(IN   )   ::     ids,ide, jds,jde, kds,kde,  &  ! d -> domain
          &                           ims,ime, jms,jme, kms,kme,  &  ! m -> memory
@@ -637,7 +639,14 @@ CONTAINS
     REAL,    DIMENSION( 1:nsoil)  ::  SMC_intermediate     ! volumetric soil moisture [m3/m3]
     REAL,    DIMENSION( 1:nsoil)  ::  SH2O_intermediate      ! volumetric liquid soil moisture [m3/m3]
     INTEGER                       :: TURFGRASS_URB
-
+    REAL                          :: ACC_ERRWAT
+    REAL ,   DIMENSION( 1:NSOIL)  :: BTRANI_dummy
+    REAL                          :: RUNONSRF
+    INTEGER                       :: NSOIL_GR
+    REAL                          :: DETENTION_STORAGE
+    REAL                          :: FAREAXY
+    REAL , DIMENSION(1:NSOIL)                         :: VOL_FLUX_SM
+    REAL                          :: VOL_FLUX_RUNON
     type(noahmp_parameters) :: parameters
 
 
@@ -1226,7 +1235,8 @@ CONTAINS
             RAININ  , SNOWIN  , ACC_SSOIL, ACC_QINSUR, ACC_QSEVA      , & ! OUT :
             ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
             ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR         & ! INOUT
-            ,SMC_INTERMEDIATE, SH2O_INTERMEDIATE,TURFGRASS_URB                        & ! added by AARON A. changes nothing without mosaic
+            ,SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
+                DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
 #ifdef WRF_HYDRO
             , sfcheadrt(i,j), WATBLED                                   &
 #endif
@@ -4677,13 +4687,21 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             TSK_mosaic(i,mosaic_i,j)=TSK(i,j)
             CANWAT_mosaic(i,mosaic_i,j)=CANWAT(i,j)
             canliqxy_mosaic(i,mosaic_i,j)=canliqxy(i,j)
-
+            
              DO soil_k=1,num_soil_layers
 
               TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
-
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.46) THEN
+                  if (SMOIS(i,soil_k,j).gt.0.4) THEN
+                      
+                      SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4 
+                      SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4
+                   endif 
+                else
+                SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
+                SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+                 
+               endif
               ENDDO
            
 
@@ -4723,13 +4741,23 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             lai_mosaic(i,mosaic_i,j)=lai(i,j)
 
 
-              DO soil_k=1,num_soil_layers
+             DO soil_k=1,num_soil_layers
 
-             TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+              TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.46) THEN
+                  if (SMOIS(i,soil_k,j).gt.0.4) THEN
+                      
+                      SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4 
+                      SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4
+                   endif 
+                else
+                SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
+                SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+                 
+               endif
+                  
 
-             ENDDO
+              ENDDO
                                                                           
                 DETENTION_STORAGEXY_mosaic(i,mosaic_i,J) = 0.
            !!snow things
@@ -4936,6 +4964,7 @@ SUBROUTINE NOAHMPLSM_MOSAIC_HUE(ITIMESTEP,        YR,   JULIAN,   COSZIN,XLAT,XL
                           ACC_ETRANIXY_mosaic,                                                  &
                           ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic,                               &
                           ACC_ECANXY_mosaic, ACC_EDIRXY_mosaic, ACC_ETRANXY_mosaic,             &
+                          ACC_ERRWATXY_mosaic,                                                   &
                           use_wudapt_lcz,                                                       & !Aaron A. Mosiac
                           TR_URB2D_mosaic,TB_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
                           TG_URB2D_mosaic,TC_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
@@ -5822,9 +5851,9 @@ type(noahmp_parameters) :: parameters
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evbxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghvxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghbxy_mosaic
-      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irgxy_mosaic
-      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ircxy_mosaic
-      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irbxy_mosaic
+       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irgxy_mosaic
+       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ircxy_mosaic
+       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irbxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: trxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evcxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: chleafxy_mosaic
@@ -5860,6 +5889,7 @@ type(noahmp_parameters) :: parameters
       REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_QINSURXY_mosaic
       REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_QSEVAXY_mosaic
       REAL,    DIMENSION( ims:ime, 1:NSOIL*mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_ETRANIXY_mosaic
+      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme), OPTIONAL, INTENT(INOUT) :: ACC_ERRWATXY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  EFLXBXY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SOILENERGY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SNOWENERGY_mosaic
@@ -6012,6 +6042,7 @@ type(noahmp_parameters) :: parameters
      REAL,    DIMENSION( 1:nsoil)  ::  SH2O_intermediate      ! volumetric liquid soil moisture [m3/m3]
      REAL,    DIMENSION( 1:nsoil)  ::  BTRANI_dummy ! BTRANI_output
      REAL                          ::  DETENTION_STORAGE
+     REAL                          ::  ACC_ERRWAT
      ! create intermediates for lateral transfers
      REAL                          :: FAREAXY
      REAL,   DIMENSION( 1:nsoil)   :: VOL_FLUX_SM
@@ -6663,7 +6694,7 @@ type(noahmp_parameters) :: parameters
             ACC_ECAN              = ACC_ECANXY  (I,J)
             ACC_ETRAN             = ACC_ETRANXY (I,J)
             ACC_EDIR              = ACC_EDIRXY  (I,J)
-
+            ACC_ERRWAT            = 0.
      ! tile drainage
             QTLDRN                = 0.                           ! tile drainage (mm)
             TDFRACMP              = TD_FRACTION(I,J)             ! tile drainage map
@@ -6979,7 +7010,7 @@ type(noahmp_parameters) :: parameters
                  ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
                  ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR       , & ! INOUT
                  SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
-                DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON &
+                DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
 #ifdef WRF_HYDRO
                  , sfcheadrt(i,j), WATBLED                                   &
 #endif
@@ -7678,9 +7709,9 @@ type(noahmp_parameters) :: parameters
               ! evbxy_mosaic(I,mosaic_i,J) = EVBXY(I,J)
                 ghvxy_mosaic(I,mosaic_i,J) = GHVXY(I,J)
                 ghbxy_mosaic(I,mosaic_i,J) = GHBXY(I,J)
-              ! irgxy_mosaic(I,mosaic_i,J) = IRGXY(I,J)
-              ! ircxy_mosaic(I,mosaic_i,J) = IRCXY(I,J)
-              ! irbxy_mosaic(I,mosaic_i,J) = IRBXY(I,J)
+              !  irgxy_mosaic(I,mosaic_i,J) = IRGXY(I,J)
+              !  ircxy_mosaic(I,mosaic_i,J) = IRCXY(I,J)
+              !  irbxy_mosaic(I,mosaic_i,J) = IRBXY(I,J)
               ! trxy_mosaic(I,mosaic_i,J) = TRXY(I,J)
               ! evcxy_mosaic(I,mosaic_i,J) = EVCXY(I,J)
               ! chleafxy_mosaic(I,mosaic_i,J) = CHLEAFXY(I,J)
@@ -7719,11 +7750,21 @@ type(noahmp_parameters) :: parameters
               ! SOILENERGY_mosaic(I,mosaic_i,J) = SOILENERGY(I,J)
               ! SNOWENERGY_mosaic(I,mosaic_i,J) = SNOWENERGY(I,J)
               CANHSXY_mosaic(I,mosaic_i,J) = CANHSXY(I,J)
-              ACC_DWATERXY_mosaic(I,mosaic_i,J) = ACC_DWATERXY(I,J)
-              ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
-              ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
-              ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY(I,J)
-              ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY(I,J)
+
+              IF (IOPT_HUE.eq.1) THEN
+                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =  ACC_DWATERXY_mosaic(I,mosaic_i,J) + ACC_DWATERXY(I,J)
+                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY_mosaic(I,mosaic_i,J) + ACC_PRCPXY(I,J)
+                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY_mosaic(I,mosaic_i,J) + ACC_ECANXY(I,J)
+                  ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY_mosaic(I,mosaic_i,J) + ACC_ETRANXY(I,J)
+                  ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY_mosaic(I,mosaic_i,J) + ACC_EDIRXY(I,J)
+                  ACC_ERRWATXY_mosaic(I,mosaic_i,J) = ACC_ERRWATXY_mosaic(I,mosaic_i,J) + ACC_ERRWAT 
+              else
+                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =   ACC_DWATERXY(I,J)
+                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
+                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
+                  ACC_ETRANXY_mosaic(I,mosaic_i,J) =  ACC_ETRANXY(I,J)
+                  ACC_EDIRXY_mosaic(I,mosaic_i,J) =  ACC_EDIRXY(I,J)
+              endif
 
               ! Irrigation variables that are needed
               !2D inout irrigation variables

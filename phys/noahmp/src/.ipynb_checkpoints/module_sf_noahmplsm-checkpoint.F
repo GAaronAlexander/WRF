@@ -8072,8 +8072,8 @@ ELSE
 
     IF(OPT_RUN == 3) THEN
        CALL INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                   SICEMAX,QINSUR ,                         & !in
-                   PDDUM  ,RUNSRF )                           !out
+                   SICEMAX,QINSUR , & !in
+                   PDDUM  ,RUNSRF,VEGTYP )                           !out
     END IF
 
     IF(OPT_RUN == 4) THEN
@@ -8127,8 +8127,8 @@ ELSE
     DO ITER = 1, NITER
        IF(QINSUR > 0.0 .and. OPT_RUN == 3) THEN
           CALL INFIL (parameters,NSOIL  ,DTFINE     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                      SICEMAX,QINSUR ,                         & !in
-                      PDDUM  ,RUNSRF )                           !out
+                      SICEMAX,QINSUR ,                       & !in
+                      PDDUM  ,RUNSRF , VEGTYP)                           !out
        END IF
 
        IF(QINSUR > 0.0 .and. OPT_RUN == 6) THEN
@@ -8312,8 +8312,8 @@ END IF ! Green BRANCH AARON A.
 !== begin infil ====================================================================================
 
   SUBROUTINE INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                    SICEMAX,QINSUR ,                         & !in
-                    PDDUM  ,RUNSRF )                           !out
+                    SICEMAX,QINSUR ,  & !in
+                    PDDUM  ,RUNSRF ,VEGTYP)                           !out
 ! --------------------------------------------------------------------------------
 ! compute inflitration rate at soil surface and surface runoff
 ! --------------------------------------------------------------------------------
@@ -8328,6 +8328,7 @@ END IF ! Green BRANCH AARON A.
   REAL, DIMENSION(1:NSOIL), INTENT(IN) :: SICE   !soil ice content [m3/m3]
   REAL,                     INTENT(IN) :: QINSUR !water input on soil surface [mm/s]
   REAL,                     INTENT(IN) :: SICEMAX!maximum soil ice content (m3/m3)
+  INTEGER,                  INTENT(IN) :: VEGTYP
 
 ! outputs
   REAL,                    INTENT(OUT) :: RUNSRF !surface runoff [mm/s]
@@ -8396,7 +8397,12 @@ END IF ! Green BRANCH AARON A.
        INFMAX = INFMAX * FCR
 
 ! jref for urban areas
-!      IF ( parameters%urban_flag ) INFMAX == INFMAX * 0.05
+     IF ( parameters%urban_flag ) INFMAX = 0.00
+     IF (OPT_HUE.eq.1) THEN
+      IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+        INFMAX = 0.00
+      END IF
+    END IF
 
        
        CALL WDFCND2 (parameters,WDF,WCND,SH2O(1),SICEMAX,1)
@@ -8405,6 +8411,20 @@ END IF ! Green BRANCH AARON A.
 
        RUNSRF= MAX(0.0, QINSUR - INFMAX)
        PDDUM = QINSUR - RUNSRF
+
+       ! make this more explicit I guess?
+       IF ( parameters%urban_flag ) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+
+               ! make this more explicit I guess?
+      IF (OPT_HUE.eq.1) THEN
+          IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+        endif 
 
     END IF
 

@@ -4677,13 +4677,21 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             TSK_mosaic(i,mosaic_i,j)=TSK(i,j)
             CANWAT_mosaic(i,mosaic_i,j)=CANWAT(i,j)
             canliqxy_mosaic(i,mosaic_i,j)=canliqxy(i,j)
-
+            
              DO soil_k=1,num_soil_layers
 
               TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
-
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.46) THEN
+                  if (SMOIS(i,soil_k,j).gt.0.4) THEN
+                      
+                      SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4 
+                      SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4
+                   endif 
+                else
+                SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
+                SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+                 
+               endif
               ENDDO
            
 
@@ -4723,13 +4731,23 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             lai_mosaic(i,mosaic_i,j)=lai(i,j)
 
 
-              DO soil_k=1,num_soil_layers
+             DO soil_k=1,num_soil_layers
 
-             TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+              TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.46) THEN
+                  if (SMOIS(i,soil_k,j).gt.0.4) THEN
+                      
+                      SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4 
+                      SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=0.4
+                   endif 
+                else
+                SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
+                SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
+                 
+               endif
+                  
 
-             ENDDO
+              ENDDO
                                                                           
                 DETENTION_STORAGEXY_mosaic(i,mosaic_i,J) = 0.
            !!snow things
@@ -7719,11 +7737,20 @@ type(noahmp_parameters) :: parameters
               ! SOILENERGY_mosaic(I,mosaic_i,J) = SOILENERGY(I,J)
               ! SNOWENERGY_mosaic(I,mosaic_i,J) = SNOWENERGY(I,J)
               CANHSXY_mosaic(I,mosaic_i,J) = CANHSXY(I,J)
-              ACC_DWATERXY_mosaic(I,mosaic_i,J) = ACC_DWATERXY(I,J)
-              ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
-              ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
-              ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY(I,J)
-              ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY(I,J)
+
+              IF (IOPT_HUE.eq.1) THEN
+                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =  ACC_DWATERXY_mosaic(I,mosaic_i,J) + ACC_DWATERXY(I,J)
+                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY_mosaic(I,mosaic_i,J) + ACC_PRCPXY(I,J)
+                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY_mosaic(I,mosaic_i,J) + ACC_ECANXY(I,J)
+                  ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY_mosaic(I,mosaic_i,J) + ACC_ETRANXY(I,J)
+                  ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY_mosaic(I,mosaic_i,J) + ACC_EDIRXY(I,J)
+              else
+                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =   ACC_DWATERXY(I,J)
+                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
+                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
+                  ACC_ETRANXY_mosaic(I,mosaic_i,J) =  ACC_ETRANXY(I,J)
+                  ACC_EDIRXY_mosaic(I,mosaic_i,J) =  ACC_EDIRXY(I,J)
+              endif
 
               ! Irrigation variables that are needed
               !2D inout irrigation variables

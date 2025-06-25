@@ -373,7 +373,7 @@ state    real   acc_prcpxy_mosaic    i{mocat}j      misc    1      -     rd=(int
 state    real   acc_ecanxy_mosaic    i{mocat}j      misc    1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "acc_ecan_mosaic"    "accumulated net canopy evaporation between dt_soil"   "mm"
 state    real   acc_etranxy_mosaic   i{mocat}j      misc    1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "acc_etran_mosaic"   "accumulated transpiration between dt_soil"   "mm"
 state    real   acc_edirxy_mosaic    i{mocat}j      misc    1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "acc_edir_mosaic"    "accumulated net soil evaporation between dt_soil"   "mm"
-
+state    real   acc_errwatxy_mosaic   i{mocat}j      misc    1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)       "acc_errwat_mosaic"   "accumulated error cumulative between dt_soil"   "mm"
 
 #Noah-MP Irrigation
 state  integer  IRNUMSI_mosaic       i{mocat}j      misc       1      -     rd=(interp_mask_land_field:lu_index)u=(copy_fcnm)    "IRNUMSI_mosaic"     "Sprinkler Irrigation Event Count" ""
