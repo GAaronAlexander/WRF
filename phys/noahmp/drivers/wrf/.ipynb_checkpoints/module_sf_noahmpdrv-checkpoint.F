@@ -367,6 +367,8 @@ CONTAINS
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ECANXY
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ETRANXY
     REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_EDIRXY
+    !REAL,    DIMENSION( ims:ime,          jms:jme ), INTENT(INOUT) ::  ACC_ERRWAT
+
 
     INTEGER,  INTENT(IN   )   ::     ids,ide, jds,jde, kds,kde,  &  ! d -> domain
          &                           ims,ime, jms,jme, kms,kme,  &  ! m -> memory
@@ -638,6 +640,14 @@ CONTAINS
     REAL,    DIMENSION( 1:nsoil)  ::  SH2O_intermediate      ! volumetric liquid soil moisture [m3/m3]
     INTEGER                       :: TURFGRASS_URB
 
+    REAL                          :: ACC_ERRWAT
+    REAL ,   DIMENSION( 1:NSOIL)  :: BTRANI_dummy
+    REAL                          :: RUNONSRF
+    INTEGER                       :: NSOIL_GR
+    REAL                          :: DETENTION_STORAGE
+    REAL                          :: FAREAXY
+    REAL , DIMENSION(1:NSOIL)                         :: VOL_FLUX_SM
+    REAL                          :: VOL_FLUX_RUNON
     type(noahmp_parameters) :: parameters
 
 
@@ -1226,7 +1236,9 @@ CONTAINS
             RAININ  , SNOWIN  , ACC_SSOIL, ACC_QINSUR, ACC_QSEVA      , & ! OUT :
             ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
             ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR         & ! INOUT
-            ,SMC_INTERMEDIATE, SH2O_INTERMEDIATE,TURFGRASS_URB                        & ! added by AARON A. changes nothing without mosaic
+
+            ,SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
+                DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
 #ifdef WRF_HYDRO
             , sfcheadrt(i,j), WATBLED                                   &
 #endif
@@ -4589,7 +4601,6 @@ END SUBROUTINE noahmp_urban
                       LANDUSEF2(i,index_44+1,j) = temp_master_LUF
 
                       ! now swap so it goes 45 44 instead of 44 45
-<<<<<<< HEAD
 
 
                       temp_master_index = mosaic_cat_index(i,index_44,j)
@@ -4675,45 +4686,9 @@ END SUBROUTINE noahmp_urban
                   temp_master_LUF = LANDUSEF2(i,index_49,j)
                   LANDUSEF2(i,index_49,j) = LANDUSEF2(i,index_49+1,j)
                   LANDUSEF2(i,index_49+1,j) = temp_master_LUF
-=======
 
+                end if
 
-                      temp_master_index = mosaic_cat_index(i,index_44,j)
-                      mosaic_cat_index(i,index_44,j) = mosaic_cat_index(i,index_44+1,j)
-                      mosaic_cat_index(i,index_44+1,j) = temp_master_index
-
-                      temp_master_LUF = LANDUSEF2(i,index_44,j)
-                      LANDUSEF2(i,index_44,j) = LANDUSEF2(i,index_44+1,j)
-                      LANDUSEF2(i,index_44+1,j) = temp_master_LUF
-
-                    end if
-
-             else !make sure that if HUE is active but not all of the new 
-                if ((LANDUSEF2(i,index_44,j).eq.0.)) then
-                     temp_master_index = mosaic_cat_index(i,index_44,j)
-                     mosaic_cat_index(i,index_44:NLCAT-1,j) = mosaic_cat_index(i,index_44+1:NLCAT,j)
-                    mosaic_cat_index(i,NLCAT,j) = temp_master_index
-
-                    temp_master_LUF = LANDUSEF2(i,index_44,j)
-                    LANDUSEF2(i,index_44:NLCAT-1,j) = LANDUSEF2(i,index_44+1:NLCAT,j)
-                    LANDUSEF2(i,NLCAT,j) = temp_master_LUF
-
-                else if  ((LANDUSEF2(i,index_45,j).eq.0.)) then
-                     temp_master_index = mosaic_cat_index(i,index_45,j)
-                     mosaic_cat_index(i,index_45:NLCAT-1,j) = mosaic_cat_index(i,index_45+1:NLCAT,j)
-                    mosaic_cat_index(i,NLCAT,j) = temp_master_index
-
-                    temp_master_LUF = LANDUSEF2(i,index_45,j)
-                    LANDUSEF2(i,index_45:NLCAT-1,j) = LANDUSEF2(i,index_45+1:NLCAT,j)
-                    LANDUSEF2(i,NLCAT,j) = temp_master_LUF
-                endif
-            end if
-          end if ! end urban to permeable pavements
-
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
-
-
-<<<<<<< HEAD
          else !make sure that if HUE is active but not all of the new 
             if ((LANDUSEF2(i,index_49,j).eq.0.)) then
                  temp_master_index = mosaic_cat_index(i,index_49,j)
@@ -4736,8 +4711,6 @@ END SUBROUTINE noahmp_urban
         end if
       end if ! end urban to permeable pavements
 
-=======
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
       ENDDO
       ENDDO
 
@@ -4805,15 +4778,6 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             TSK_mosaic(i,mosaic_i,j)=TSK(i,j)
             CANWAT_mosaic(i,mosaic_i,j)=CANWAT(i,j)
             canliqxy_mosaic(i,mosaic_i,j)=canliqxy(i,j)
-<<<<<<< HEAD
-
-             DO soil_k=1,num_soil_layers
-
-              TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
-
-=======
             
              DO soil_k=1,num_soil_layers
 
@@ -4829,7 +4793,6 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
                 SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
                  
                endif
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
               ENDDO
            
 
@@ -4869,15 +4832,9 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             lai_mosaic(i,mosaic_i,j)=lai(i,j)
 
 
+
              DO soil_k=1,num_soil_layers
 
-<<<<<<< HEAD
-             TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
-              SMOIS_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SMOIS(i,soil_k,j)
-              SH2O_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=SH2O(i,soil_k,j)
-
-             ENDDO
-=======
               TSLB_mosaic(i,num_soil_layers*(mosaic_i-1)+soil_k,j)=TSLB(i,soil_k,j)
               IF (mosaic_cat_index(i,mosaic_i,j).eq.46) THEN
                   if (SMOIS(i,soil_k,j).gt.0.4) THEN
@@ -4893,7 +4850,6 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
                   
 
               ENDDO
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                                                                           
                 DETENTION_STORAGEXY_mosaic(i,mosaic_i,J) = 0.
            !!snow things
@@ -5100,6 +5056,7 @@ SUBROUTINE NOAHMPLSM_MOSAIC_HUE(ITIMESTEP,        YR,   JULIAN,   COSZIN,XLAT,XL
                           ACC_ETRANIXY_mosaic,                                                  &
                           ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic,                               &
                           ACC_ECANXY_mosaic, ACC_EDIRXY_mosaic, ACC_ETRANXY_mosaic,             &
+                          ACC_ERRWATXY_mosaic,                                                   &
                           use_wudapt_lcz,                                                       & !Aaron A. Mosiac
                           TR_URB2D_mosaic,TB_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
                           TG_URB2D_mosaic,TC_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
@@ -5986,9 +5943,11 @@ type(noahmp_parameters) :: parameters
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evbxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghvxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghbxy_mosaic
+
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irgxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ircxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irbxy_mosaic
+
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: trxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evcxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: chleafxy_mosaic
@@ -6024,6 +5983,7 @@ type(noahmp_parameters) :: parameters
       REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_QINSURXY_mosaic
       REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_QSEVAXY_mosaic
       REAL,    DIMENSION( ims:ime, 1:NSOIL*mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_ETRANIXY_mosaic
+      REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme), OPTIONAL, INTENT(INOUT) :: ACC_ERRWATXY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  EFLXBXY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SOILENERGY_mosaic
      ! REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  SNOWENERGY_mosaic
@@ -6176,6 +6136,7 @@ type(noahmp_parameters) :: parameters
      REAL,    DIMENSION( 1:nsoil)  ::  SH2O_intermediate      ! volumetric liquid soil moisture [m3/m3]
      REAL,    DIMENSION( 1:nsoil)  ::  BTRANI_dummy ! BTRANI_output
      REAL                          ::  DETENTION_STORAGE
+     REAL                          ::  ACC_ERRWAT
      ! create intermediates for lateral transfers
      REAL                          :: FAREAXY
      REAL,   DIMENSION( 1:nsoil)   :: VOL_FLUX_SM
@@ -6477,14 +6438,10 @@ type(noahmp_parameters) :: parameters
                !permeable pavement, then  adopt largest urban
                !params to route to (only works for the slab model)
                !turfgrass. NOTE: ONLY for NLCD Aaron A. 
-<<<<<<< HEAD
                ! also now 
                TURFGRASS_URB = 0
                if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or.(IVGTYP(I,J).EQ.45).or.(IVGTYP(I,J).EQ.48)) THEN ! currently hardcoded for NLCD
-=======
-               TURFGRASS_URB = 0
-               if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or.(IVGTYP(I,J).EQ.45)) THEN ! currently hardcoded for NLCD
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
+
                        DO LAYER=1,mosaic_cat
                                 if ((mosaic_cat_index(I,LAYER,J).EQ.26).or.(mosaic_cat_index(I,LAYER,J).EQ.24).or.(mosaic_cat_index(I,LAYER,J).EQ.25)) THEN 
                                         TURFGRASS_URB=mosaic_cat_index(I,LAYER,J)
@@ -6833,7 +6790,7 @@ type(noahmp_parameters) :: parameters
             ACC_ECAN              = ACC_ECANXY  (I,J)
             ACC_ETRAN             = ACC_ETRANXY (I,J)
             ACC_EDIR              = ACC_EDIRXY  (I,J)
-
+            ACC_ERRWAT            = 0.
      ! tile drainage
             QTLDRN                = 0.                           ! tile drainage (mm)
             TDFRACMP              = TD_FRACTION(I,J)             ! tile drainage map
@@ -7150,6 +7107,7 @@ type(noahmp_parameters) :: parameters
                  ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR       , & ! INOUT
                  SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
                 DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON &
+
 #ifdef WRF_HYDRO
                  , sfcheadrt(i,j), WATBLED                                   &
 #endif
@@ -7848,9 +7806,11 @@ type(noahmp_parameters) :: parameters
               ! evbxy_mosaic(I,mosaic_i,J) = EVBXY(I,J)
                 ghvxy_mosaic(I,mosaic_i,J) = GHVXY(I,J)
                 ghbxy_mosaic(I,mosaic_i,J) = GHBXY(I,J)
+                
               ! irgxy_mosaic(I,mosaic_i,J) = IRGXY(I,J)
               ! ircxy_mosaic(I,mosaic_i,J) = IRCXY(I,J)
               ! irbxy_mosaic(I,mosaic_i,J) = IRBXY(I,J)
+
               ! trxy_mosaic(I,mosaic_i,J) = TRXY(I,J)
               ! evcxy_mosaic(I,mosaic_i,J) = EVCXY(I,J)
               ! chleafxy_mosaic(I,mosaic_i,J) = CHLEAFXY(I,J)
@@ -7889,13 +7849,6 @@ type(noahmp_parameters) :: parameters
               ! SOILENERGY_mosaic(I,mosaic_i,J) = SOILENERGY(I,J)
               ! SNOWENERGY_mosaic(I,mosaic_i,J) = SNOWENERGY(I,J)
               CANHSXY_mosaic(I,mosaic_i,J) = CANHSXY(I,J)
-<<<<<<< HEAD
-              ACC_DWATERXY_mosaic(I,mosaic_i,J) = ACC_DWATERXY(I,J)
-              ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
-              ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
-              ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY(I,J)
-              ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY(I,J)
-=======
 
               IF (IOPT_HUE.eq.1) THEN
                   ACC_DWATERXY_mosaic(I,mosaic_i,J) =  ACC_DWATERXY_mosaic(I,mosaic_i,J) + ACC_DWATERXY(I,J)
@@ -7903,6 +7856,7 @@ type(noahmp_parameters) :: parameters
                   ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY_mosaic(I,mosaic_i,J) + ACC_ECANXY(I,J)
                   ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY_mosaic(I,mosaic_i,J) + ACC_ETRANXY(I,J)
                   ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY_mosaic(I,mosaic_i,J) + ACC_EDIRXY(I,J)
+                  ACC_ERRWATXY_mosaic(I,mosaic_i,J) = ACC_ERRWATXY_mosaic(I,mosaic_i,J) + ACC_ERRWAT 
               else
                   ACC_DWATERXY_mosaic(I,mosaic_i,J) =   ACC_DWATERXY(I,J)
                   ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
@@ -7910,7 +7864,6 @@ type(noahmp_parameters) :: parameters
                   ACC_ETRANXY_mosaic(I,mosaic_i,J) =  ACC_ETRANXY(I,J)
                   ACC_EDIRXY_mosaic(I,mosaic_i,J) =  ACC_EDIRXY(I,J)
               endif
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 
               ! Irrigation variables that are needed
               !2D inout irrigation variables
@@ -7963,12 +7916,10 @@ type(noahmp_parameters) :: parameters
 
                IF( (SF_URBAN_PHYSICS == 0).and.( (IVGTYP(I,J) == ISURBAN_TABLE) .or.( IVGTYP(I,J) == LCZ_1_TABLE) .or. (IVGTYP(I,J) == LCZ_2_TABLE) .or. &
                 (IVGTYP(I,J) == LCZ_3_TABLE) .or. (IVGTYP(I,J) == 42) .or. (IVGTYP(I,J) == 44) .or. &
-<<<<<<< HEAD
+
                 (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16) .or. 
                 (IVGTYP(I,J) == 48))) THEN
-=======
-                (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16))) THEN
->>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
+
                 FAREA2 = 0.0 !This is a fix to change how the urban areas/barren areas
                 ! We are only going to be outputting the average of the vegetated area.
         ENDIF
