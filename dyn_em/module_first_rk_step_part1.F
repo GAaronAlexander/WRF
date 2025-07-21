@@ -1112,8 +1112,9 @@ BENCH_START(surf_driver_tim)
      &        , FLXHUMG_URB2D_mosaic=grid%FLXHUMG_URB2D_mosaic, t2mvxy_mosaic=grid%t2mvxy_mosaic, t2mbxy_mosaic=grid%t2mbxy_mosaic                    &
      &        , q2mvxy_mosaic=grid%q2mvxy_mosaic, q2mbxy_mosaic=grid%q2mbxy_mosaic, fvegxy_mosaic=grid%fvegxy_mosaic                                  &
      &        , ecanxy_mosaic=grid%ecanxy_mosaic, edirxy_mosaic=grid%edirxy_mosaic, etranxy_mosaic=grid%etranxy_mosaic                                &
-     &        ,pahxy_mosaic=grid%pahxy_mosaic,canhsxy_mosaic=grid%canhsxy_mosaic,firaxy_mosaic=grid%firaxy_mosaic,fsaxy_mosaic=grid%fsaxy_mosaic      &
-
+     &        , pahxy_mosaic=grid%pahxy_mosaic, canhsxy_mosaic=grid%canhsxy_mosaic,firaxy_mosaic=grid%firaxy_mosaic,fsaxy_mosaic=grid%fsaxy_mosaic      &
+     &        , shbxy_mosaic=grid%shbxy_mosaic,shcxy_mosaic=grid%shcxy_mosaic,shgxy_mosaic=grid%shgxy_mosaic, ghvxy_mosaic=grid%ghvxy_mosaic, ghbxy_mosaic=grid%ghbxy_mosaic &
+     &        , tgvxy_mosaic=grid%tgvxy_mosaic, tgbxy_mosaic=grid%tgbxy_mosaic  &
 ! Noah-MP HUE optional variables
 #endif
      &        , runonsfxy=grid%runonsfxy, runonsfxy_mosaic=grid%runonsfxy_mosaic, DETENTION_STORAGEXY=grid%DETENTION_STORAGEXY    &
