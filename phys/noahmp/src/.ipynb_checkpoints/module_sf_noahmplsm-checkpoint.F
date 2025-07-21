@@ -1856,7 +1856,11 @@ END_WB = 0.0
          !This is an identical land-use type to an urban location, but
          !has been completely disconnected (meaning all water will be
          ! input to an adjacent turf grass or vegitatation type (43))
+<<<<<<< HEAD
        ELSE IF( (VEGTYP.eq.42).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48) ) THEN
+=======
+       ELSE IF( (VEGTYP.eq.42).or.(VEGTYP.eq.45) ) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
          END_WB = CANLIQ + CANICE + SNEQV + WA
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
@@ -1867,7 +1871,11 @@ END_WB = 0.0
          DO IZ = 1,NSOIL_GR
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
          END DO
+<<<<<<< HEAD
        ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.43).or.(VEGTYP.eq.49) )THEN
+=======
+       ELSE IF ((VEGTYP.EQ.44).OR.(VEGTYP.EQ.43) )THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
          END_WB = CANLIQ + CANICE + SNEQV + WA
          DO IZ = 1,NSOIL
            END_WB = END_WB + (SMC(IZ)+SMC2(IZ)) * DZSNSO(IZ) * 1000.
@@ -2308,7 +2316,11 @@ END_WB = 0.0
     VAI = ELAI + ESAI
     VEG = .FALSE.
     IF(VAI > 0.0) VEG = .TRUE.
+<<<<<<< HEAD
     IF( (VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48) ) VEG=.FALSE.
+=======
+    IF((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45) ) VEG=.FALSE.
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 
 ! ground snow cover fraction [Niu and Yang, 2007, JGR]
 
@@ -2349,14 +2361,22 @@ END_WB = 0.0
 
 ! special case for urban
     !IF ((ILOC==93).and.(JLOC==56)) WRITE(*,*) 'TURFGRASS_URB', TURFGRASS_URB
+<<<<<<< HEAD
      IF ((parameters%urban_flag).AND.(VEGTYP.ne.42).and.(VEGTYP.ne.44).and.(VEGTYP.ne.45).and.(VEGTYP.ne.48))THEN !Added by Aaron A.) THEN
+=======
+     IF ((parameters%urban_flag).AND.(VEGTYP.ne.42).and.(VEGTYP.ne.44).and.(VEGTYP.ne.45) )THEN !Added by Aaron A.) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
        Z0MG = parameters%Z0MVT
        ZPDG  = 0.65 * parameters%HVT
        Z0M  = Z0MG
        ZPD  = ZPDG
      END IF
 
+<<<<<<< HEAD
     IF ((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48))THEN !Added by Aaron A.) THEN
+=======
+    IF ((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.or.45) )THEN !Added by Aaron A.) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
     if (TURFGRASS_URB.EQ.24) THEN 
        Z0MG = 1.3
        ZPDG  = 0.65*3.0
@@ -2759,7 +2779,11 @@ IF (GREEN_ROOF) THEN !add green roof (only a single layer)
 ELSE ! Normal
     DO  IZ = 1, NSOIL
        SICE(IZ)  = SMC(IZ) - SH2O(IZ)
+<<<<<<< HEAD
        IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.48)) THEN
+=======
+       IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                if (VEGTYP.EQ.24) THEN 
                        HCPCT(IZ) = 1.43E+6*1
                else if ((VEGTYP.EQ.25).OR.(VEGTYP.EQ.13)) THEN
@@ -2771,7 +2795,11 @@ ELSE ! Normal
                end if 
        !ELSE IF ((VEGTYP.EQ.41)) THEN 
        !    HCPCT(IZ) = 1.95E+6*1
+<<<<<<< HEAD
        ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41).or.(VEGTYP.EQ.48)) THEN
+=======
+       ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
               if (TURFGRASS_URB.EQ.24) THEN
                        HCPCT(IZ) = 1.43E+6*1
                else if ((TURFGRASS_URB.EQ.25).OR.(VEGTYP.EQ.13)) THEN
@@ -2807,7 +2835,11 @@ ELSE ! Normal
     END DO
 END IF
 !Diffusivirty
+<<<<<<< HEAD
 IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.48)) THEN
+=======
+IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         if (VEGTYP.EQ.24) THEN 
          DO IZ = 1,NSOIL
          DF(IZ) = 0.75*1  
@@ -2829,7 +2861,11 @@ IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE
 !        DO IZ = 1,NSOIL
 !         DF(IZ) = 0.82*1
 !       END DO
+<<<<<<< HEAD
 ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41).or.(VEGTYP.EQ.48)) THEN
+=======
+ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         if (TURFGRASS_URB.EQ.24) THEN
          DO IZ = 1,NSOIL
          DF(IZ) = 0.75*1
@@ -3744,7 +3780,11 @@ END IF
         INC = MAX(0.11-0.40*SMC(1), 0.0)
         IF (IST .EQ. 1)  THEN                     !soil
                 IF (IB == 1) THEN
+<<<<<<< HEAD
                         IF(( parameters%urban_flag).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.48)) THEN
+=======
+                        IF(( parameters%urban_flag).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.42)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                                 if (VEGTYP.EQ.24) THEN 
                                         ALBSOD = 0.211
                                         ALBSOI = 0.211
@@ -3761,7 +3801,11 @@ END IF
                        ! ELSE IF ((VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
                        !         ALBSOD = 0.1
                        !         ALBSOI = 0.1
+<<<<<<< HEAD
                         ELSE IF ((VEGTYP.EQ.42).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45).OR.(VEGTYP.EQ.48)) THEN
+=======
+                        ELSE IF ((VEGTYP.EQ.42).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                                 if (TURFGRASS_URB.EQ.24) THEN
                                         ALBSOD = 0.211
                                         ALBSOI = 0.211
@@ -3783,7 +3827,11 @@ END IF
                                 ALBSOI = ALBSOD
                         END IF
                  ELSE
+<<<<<<< HEAD
                         IF(( parameters%urban_flag).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45).OR.(VEGTYP.EQ.42).OR.(VEGTYP.EQ.48)) THEN 
+=======
+                        IF(( parameters%urban_flag).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45).OR.(VEGTYP.EQ.42)) THEN 
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                                 ALBSOD = 0.02
                                 ALBSOI = 0.02 
 
@@ -4530,7 +4578,11 @@ END IF
           EVC = MIN(CANICE*LATHEAV/DT,EVC)
 	END IF
         ! canopy heat capacity
+<<<<<<< HEAD
         IF ((VEGTYP.eq.43).or.(VEGTYP.eq.48)) THEN ! Aaron a. 
+=======
+        IF ((VEGTYP.eq.43)) THEN ! Aaron a. 
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE IF ((VEGTYP.eq.41).or.(VEGTYP.eq.47)) THEN
         HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
@@ -8072,8 +8124,8 @@ ELSE
 
     IF(OPT_RUN == 3) THEN
        CALL INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                   SICEMAX,QINSUR ,                         & !in
-                   PDDUM  ,RUNSRF )                           !out
+                   SICEMAX,QINSUR , & !in
+                   PDDUM  ,RUNSRF,VEGTYP )                           !out
     END IF
 
     IF(OPT_RUN == 4) THEN
@@ -8127,8 +8179,8 @@ ELSE
     DO ITER = 1, NITER
        IF(QINSUR > 0.0 .and. OPT_RUN == 3) THEN
           CALL INFIL (parameters,NSOIL  ,DTFINE     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                      SICEMAX,QINSUR ,                         & !in
-                      PDDUM  ,RUNSRF )                           !out
+                      SICEMAX,QINSUR ,                       & !in
+                      PDDUM  ,RUNSRF , VEGTYP)                           !out
        END IF
 
        IF(QINSUR > 0.0 .and. OPT_RUN == 6) THEN
@@ -8317,8 +8369,8 @@ END IF ! Green BRANCH AARON A.
 !== begin infil ====================================================================================
 
   SUBROUTINE INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                    SICEMAX,QINSUR ,                         & !in
-                    PDDUM  ,RUNSRF )                           !out
+                    SICEMAX,QINSUR ,  & !in
+                    PDDUM  ,RUNSRF ,VEGTYP)                           !out
 ! --------------------------------------------------------------------------------
 ! compute inflitration rate at soil surface and surface runoff
 ! --------------------------------------------------------------------------------
@@ -8333,6 +8385,7 @@ END IF ! Green BRANCH AARON A.
   REAL, DIMENSION(1:NSOIL), INTENT(IN) :: SICE   !soil ice content [m3/m3]
   REAL,                     INTENT(IN) :: QINSUR !water input on soil surface [mm/s]
   REAL,                     INTENT(IN) :: SICEMAX!maximum soil ice content (m3/m3)
+  INTEGER,                  INTENT(IN) :: VEGTYP
 
 ! outputs
   REAL,                    INTENT(OUT) :: RUNSRF !surface runoff [mm/s]
@@ -8401,7 +8454,16 @@ END IF ! Green BRANCH AARON A.
        INFMAX = INFMAX * FCR
 
 ! jref for urban areas
+<<<<<<< HEAD
 !      IF ( parameters%urban_flag ) INFMAX == INFMAX * 0.05
+=======
+     IF ( parameters%urban_flag ) INFMAX = 0.00
+     IF (OPT_HUE.eq.1) THEN
+      IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+        INFMAX = 0.00
+      END IF
+    END IF
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 
        
        CALL WDFCND2 (parameters,WDF,WCND,SH2O(1),SICEMAX,1)
@@ -8410,6 +8472,20 @@ END IF ! Green BRANCH AARON A.
 
        RUNSRF= MAX(0.0, QINSUR - INFMAX)
        PDDUM = QINSUR - RUNSRF
+
+       ! make this more explicit I guess?
+       IF ( parameters%urban_flag ) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+
+               ! make this more explicit I guess?
+      IF (OPT_HUE.eq.1) THEN
+          IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+        endif 
 
     END IF
 

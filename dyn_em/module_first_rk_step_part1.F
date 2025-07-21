@@ -1115,6 +1115,10 @@ BENCH_START(surf_driver_tim)
      &        , pahxy_mosaic=grid%pahxy_mosaic, canhsxy_mosaic=grid%canhsxy_mosaic,firaxy_mosaic=grid%firaxy_mosaic,fsaxy_mosaic=grid%fsaxy_mosaic      &
      &        , shbxy_mosaic=grid%shbxy_mosaic,shcxy_mosaic=grid%shcxy_mosaic,shgxy_mosaic=grid%shgxy_mosaic, ghvxy_mosaic=grid%ghvxy_mosaic, ghbxy_mosaic=grid%ghbxy_mosaic &
      &        , tgvxy_mosaic=grid%tgvxy_mosaic, tgbxy_mosaic=grid%tgbxy_mosaic  &
+<<<<<<< HEAD
+=======
+              , ACC_ERRWATXY_mosaic = grid%ACC_ERRWATXY_mosaic &
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 ! Noah-MP HUE optional variables
 #endif
      &        , runonsfxy=grid%runonsfxy, runonsfxy_mosaic=grid%runonsfxy_mosaic, DETENTION_STORAGEXY=grid%DETENTION_STORAGEXY    &

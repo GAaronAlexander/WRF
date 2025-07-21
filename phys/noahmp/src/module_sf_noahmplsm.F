@@ -498,7 +498,11 @@ contains
                    ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
                    ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR,         & ! INOUT
                    SMC_dummy, SH2O_dummy, TURFGRASS_URB,BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
+<<<<<<< HEAD
                    DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON &
+=======
+                   DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 #ifdef WRF_HYDRO
                    ,SFCHEADRT, WATBLED                                         & ! IN/OUT :
 #endif
@@ -604,7 +608,7 @@ contains
   REAL                           , INTENT(INOUT) :: ACC_ECAN    !accumulated net canopy evapo mm/timestep(soil)
   REAL                           , INTENT(INOUT) :: ACC_ETRAN   !accumulated transpiration mm/timestep(soil)
   REAL                           , INTENT(INOUT) :: ACC_EDIR    !accumulated net soil/snow evapo mm/timestep(soil)
-
+  REAL                           , INTENT(INOUT) :: ACC_ERRWAT  !accumulated error over time mm/timestep ! Aaron A. 
   REAL, DIMENSION(1:60)          , INTENT(INOUT) :: gecros1d    !gecros crop
 
 ! output
@@ -1167,7 +1171,7 @@ END IF ! end the HUE change to the water balance
                  IRMIRATE, IRFIRATE, ACC_DWATER, ACC_PRCP, ACC_ECAN, &
                  ACC_ETRAN, ACC_EDIR,                                 &
                  RUNONSRF, VEGTYP, GREEN_ROOF,NSOIL_GR,DETENTION_STORAGE,FAREA, &
-                 SMC_dummy,ETRAN2)   !in ( Except ERRWAT, which is out )
+                 SMC_dummy,ETRAN2,ACC_ERRWAT)   !in ( Except ERRWAT, which is out )
 
   ! These are for the urban to turfgrass and urban to permeable pavement
   IF (OPT_HUE.eq.1) THEN
@@ -1686,7 +1690,7 @@ ENDIF   ! CROPTYPE == 0
       QSNOW   = QDRIPS + QTHROS
       SNOWHIN = QSNOW/BDFALL
 
-      IF (IST == 2 .AND. TG > TFRZ) THEN
+        IF (IST == 2 .AND. TG > TFRZ) THEN
          QSNOW   = 0.0
          SNOWHIN = 0.0
       END IF
@@ -1704,7 +1708,8 @@ ENDIF   ! CROPTYPE == 0
                     SAV    ,SAG    ,FSRV   ,FSRG   ,ZWT    ,PAH    , &
                     PAHV   ,PAHG   ,PAHB   ,FIRR   ,CANHS  ,         &
                     IRMIRATE, IRFIRATE, ACC_DWATER, ACC_PRCP, ACC_ECAN, &
-                    ACC_ETRAN, ACC_EDIR, RUNONSRF, VEGTYP, GREEN_ROOF, NSOIL_GR, DETENTION_STORAGE, FAREA,SMC2 , ETRAN2)
+                    ACC_ETRAN, ACC_EDIR, RUNONSRF, VEGTYP, GREEN_ROOF, &
+                    NSOIL_GR, DETENTION_STORAGE, FAREA,SMC2 , ETRAN2,ACC_ERRWAT)
 ! --------------------------------------------------------------------------------------------------
 ! check surface energy balance and water balance
 ! --------------------------------------------------------------------------------------------------
@@ -1762,7 +1767,7 @@ ENDIF   ! CROPTYPE == 0
   REAL                           , INTENT(INOUT) :: ACC_ECAN   ! accumulated net canopy evapo mm/timestep(soil)
   REAL                           , INTENT(INOUT) :: ACC_ETRAN  ! accumulated transpiration mm/timestep(soil)
   REAL                           , INTENT(INOUT) :: ACC_EDIR   ! accumulated net soil/snow evapo mm/timestep(soil)
-
+  REAL                           , INTENT(INOUT) :: ACC_ERRWAT ! accumulated error over mm/timestep ! Aaron A. 
 
   ! Added optional for HUE noah-mp
 
@@ -1930,7 +1935,8 @@ END_WB = 0.0
        else 
           ERRWAT = ACC_DWATER - (ACC_PRCP + IRFIRATE*1000.0 + IRMIRATE*1000.0 - ACC_ECAN - &
                                 ACC_ETRAN - ACC_EDIR - RUNSRF - RUNSUB - QTLDRN)
-      endif 
+      endif
+
 #ifndef WRF_HYDRO
         IF(ABS(ERRWAT) > 0.1) THEN
            if (ERRWAT > 0) then
@@ -2308,7 +2314,11 @@ END_WB = 0.0
     VAI = ELAI + ESAI
     VEG = .FALSE.
     IF(VAI > 0.0) VEG = .TRUE.
+<<<<<<< HEAD
     IF( (VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48) ) VEG=.FALSE.
+=======
+    IF((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45) ) VEG=.FALSE.
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
 
 ! ground snow cover fraction [Niu and Yang, 2007, JGR]
 
@@ -2349,14 +2359,22 @@ END_WB = 0.0
 
 ! special case for urban
     !IF ((ILOC==93).and.(JLOC==56)) WRITE(*,*) 'TURFGRASS_URB', TURFGRASS_URB
+<<<<<<< HEAD
      IF ((parameters%urban_flag).AND.(VEGTYP.ne.42).and.(VEGTYP.ne.44).and.(VEGTYP.ne.45).and.(VEGTYP.ne.48))THEN !Added by Aaron A.) THEN
+=======
+     IF ((parameters%urban_flag).AND.(VEGTYP.ne.42).and.(VEGTYP.ne.44).and.(VEGTYP.ne.45) )THEN !Added by Aaron A.) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
        Z0MG = parameters%Z0MVT
        ZPDG  = 0.65 * parameters%HVT
        Z0M  = Z0MG
        ZPD  = ZPDG
      END IF
 
+<<<<<<< HEAD
     IF ((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48))THEN !Added by Aaron A.) THEN
+=======
+    IF ((VEGTYP.eq.42).or.(VEGTYP.eq.44).or.(VEGTYP.or.45) )THEN !Added by Aaron A.) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
     if (TURFGRASS_URB.EQ.24) THEN 
        Z0MG = 1.3
        ZPDG  = 0.65*3.0
@@ -2771,7 +2789,11 @@ ELSE ! Normal
                end if 
        !ELSE IF ((VEGTYP.EQ.41)) THEN 
        !    HCPCT(IZ) = 1.95E+6*1
+<<<<<<< HEAD
        ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41).or.(VEGTYP.EQ.48)) THEN
+=======
+       ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
               if (TURFGRASS_URB.EQ.24) THEN
                        HCPCT(IZ) = 1.43E+6*1
                else if ((TURFGRASS_URB.EQ.25).OR.(VEGTYP.EQ.13)) THEN
@@ -2807,7 +2829,11 @@ ELSE ! Normal
     END DO
 END IF
 !Diffusivirty
+<<<<<<< HEAD
 IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41).AND.(VEGTYP.NE.48)) THEN
+=======
+IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE.45).AND.(VEGTYP.NE.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         if (VEGTYP.EQ.24) THEN 
          DO IZ = 1,NSOIL
          DF(IZ) = 0.75*1  
@@ -2829,7 +2855,11 @@ IF ((parameters%urban_flag).AND.(VEGTYP.NE.42).AND.(VEGTYP.NE.44).AND.(VEGTYP.NE
 !        DO IZ = 1,NSOIL
 !         DF(IZ) = 0.82*1
 !       END DO
+<<<<<<< HEAD
 ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41).or.(VEGTYP.EQ.48)) THEN
+=======
+ELSE IF ((VEGTYP.EQ.42).or.(VEGTYP.EQ.45).or.(VEGTYP.EQ.41)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         if (TURFGRASS_URB.EQ.24) THEN
          DO IZ = 1,NSOIL
          DF(IZ) = 0.75*1
@@ -3761,7 +3791,11 @@ END IF
                        ! ELSE IF ((VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
                        !         ALBSOD = 0.1
                        !         ALBSOI = 0.1
+<<<<<<< HEAD
                         ELSE IF ((VEGTYP.EQ.42).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45).OR.(VEGTYP.EQ.48)) THEN
+=======
+                        ELSE IF ((VEGTYP.EQ.42).OR.(VEGTYP.EQ.41).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.45)) THEN
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
                                 if (TURFGRASS_URB.EQ.24) THEN
                                         ALBSOD = 0.211
                                         ALBSOI = 0.211
@@ -4530,7 +4564,11 @@ END IF
           EVC = MIN(CANICE*LATHEAV/DT,EVC)
 	END IF
         ! canopy heat capacity
+<<<<<<< HEAD
         IF ((VEGTYP.eq.43).or.(VEGTYP.eq.48)) THEN ! Aaron a. 
+=======
+        IF ((VEGTYP.eq.43)) THEN ! Aaron a. 
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
         ELSE IF ((VEGTYP.eq.41).or.(VEGTYP.eq.47)) THEN
         HCV = 0.02*VAIE*CWAT + CANLIQ*CWAT/DENH2O + CANICE*CICE/DENICE    !j/m2/k
@@ -8072,8 +8110,8 @@ ELSE
 
     IF(OPT_RUN == 3) THEN
        CALL INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                   SICEMAX,QINSUR ,                         & !in
-                   PDDUM  ,RUNSRF )                           !out
+                   SICEMAX,QINSUR , & !in
+                   PDDUM  ,RUNSRF,VEGTYP )                           !out
     END IF
 
     IF(OPT_RUN == 4) THEN
@@ -8127,8 +8165,8 @@ ELSE
     DO ITER = 1, NITER
        IF(QINSUR > 0.0 .and. OPT_RUN == 3) THEN
           CALL INFIL (parameters,NSOIL  ,DTFINE     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                      SICEMAX,QINSUR ,                         & !in
-                      PDDUM  ,RUNSRF )                           !out
+                      SICEMAX,QINSUR ,                       & !in
+                      PDDUM  ,RUNSRF , VEGTYP)                           !out
        END IF
 
        IF(QINSUR > 0.0 .and. OPT_RUN == 6) THEN
@@ -8317,8 +8355,8 @@ END IF ! Green BRANCH AARON A.
 !== begin infil ====================================================================================
 
   SUBROUTINE INFIL (parameters,NSOIL  ,DT     ,ZSOIL  ,SH2O   ,SICE   , & !in
-                    SICEMAX,QINSUR ,                         & !in
-                    PDDUM  ,RUNSRF )                           !out
+                    SICEMAX,QINSUR ,  & !in
+                    PDDUM  ,RUNSRF ,VEGTYP)                           !out
 ! --------------------------------------------------------------------------------
 ! compute inflitration rate at soil surface and surface runoff
 ! --------------------------------------------------------------------------------
@@ -8333,6 +8371,7 @@ END IF ! Green BRANCH AARON A.
   REAL, DIMENSION(1:NSOIL), INTENT(IN) :: SICE   !soil ice content [m3/m3]
   REAL,                     INTENT(IN) :: QINSUR !water input on soil surface [mm/s]
   REAL,                     INTENT(IN) :: SICEMAX!maximum soil ice content (m3/m3)
+  INTEGER,                  INTENT(IN) :: VEGTYP
 
 ! outputs
   REAL,                    INTENT(OUT) :: RUNSRF !surface runoff [mm/s]
@@ -8401,7 +8440,14 @@ END IF ! Green BRANCH AARON A.
        INFMAX = INFMAX * FCR
 
 ! jref for urban areas
-!      IF ( parameters%urban_flag ) INFMAX == INFMAX * 0.05
+     IF (( parameters%urban_flag) .AND.(VEGTYP.NE.44)) THEN 
+        INFMAX = 0.00
+     END IF 
+     IF (OPT_HUE.eq.1) THEN
+      IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+        INFMAX = 0.00
+      END IF
+    END IF
 
        
        CALL WDFCND2 (parameters,WDF,WCND,SH2O(1),SICEMAX,1)
@@ -8410,6 +8456,20 @@ END IF ! Green BRANCH AARON A.
 
        RUNSRF= MAX(0.0, QINSUR - INFMAX)
        PDDUM = QINSUR - RUNSRF
+
+       ! make this more explicit I guess?
+       IF (( parameters%urban_flag ).AND.(VEGTYP.NE.44)) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+
+               ! make this more explicit I guess?
+      IF (OPT_HUE.eq.1) THEN
+          IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+           RUNSRF = RUNSRF + PDDUM
+           PDDUM = 0.
+        endif 
+        endif 
 
     END IF
 
@@ -10368,7 +10428,11 @@ END SUBROUTINE RR2
           OUTFLOW_ONE = 0.0
         ENDIF
 
+<<<<<<< HEAD
         STORAGE_NEW = MAX(0.0, STORAGE + QINSUR_MOD*DT - OUTFLOW_ONE*DT -ETRANI(1)*DT/1000 - QSEVA*DT/1000)
+=======
+        STORAGE_NEW = MAX(0.0, STORAGE + QINSUR_MOD*DT - OUTFLOW_ONE*DT -ETRANI(1)*DT - QSEVA*DT)
+>>>>>>> d4f9a39cb1e962f0b636f0a1b1cb2902267cee6e
         !WRITE(*,*) 'STORAGEMAX:', STORAGEMAX, 'STORAGE NEW', STORAGE_NEW
 !-------------------------------------------------------------------------------
 ! If there is too much moisture, in the green roof, create the an overland flow

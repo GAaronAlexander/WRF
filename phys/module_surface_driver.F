@@ -175,7 +175,7 @@ CONTAINS
      &          ,pahxy_mosaic,canhsxy_mosaic,firaxy_mosaic,fsaxy_mosaic,shgxy_mosaic,shcxy_mosaic,shbxy_mosaic,ghvxy_mosaic,ghbxy_mosaic, tgvxy_mosaic, tgbxy_mosaic  &
 #endif                 
      &          ,runonsfxy,runonsfxy_mosaic, DETENTION_STORAGEXY,DETENTION_STORAGEXY_mosaic,VOL_FLUX_RUNONXY_mosaic                 &
-     &          ,VOL_FLUX_SMXY_mosaic &
+     &          ,VOL_FLUX_SMXY_mosaic, ACC_ERRWATXY_mosaic &
 
      !~~~~~~~~~~~~~~~~~~~~~~~End Noah-MP HUE and Mosaic. Added by Aaron A.
      &          ,SDA_HFX, SDA_QFX, HFX_BOTH, QFX_BOTH, QNORM, fasdas,spp_lsm,pattern_spp_lsm,field_sf,spp_pbl,pattern_spp_pbl,XLAIDYN                     &
@@ -1329,6 +1329,7 @@ CONTAINS
   REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_ECANXY_mosaic
   REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_ETRANXY_mosaic
   REAL,    DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ), OPTIONAL, INTENT(INOUT) ::  ACC_EDIRXY_mosaic
+  REAL,    DIMENSION( ims:ime, 1:mosaic_Cat, jms:jme), OPTIONAL,  INTENT(INOUT):: ACC_ERRWATXY_mosaic
 
   ! Irrigation variables that are needed
   !2D inout irrigation variables
@@ -3242,7 +3243,7 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
                                    ACC_SSOILXY_mosaic, ACC_QINSURXY_mosaic, ACC_QSEVAXY_mosaic,          &
                                    ACC_ETRANIXY_mosaic,  &
                                    ACC_DWATERXY_mosaic, ACC_PRCPXY_mosaic, ACC_ECANXY_mosaic, ACC_EDIRXY_mosaic, &
-                                   ACC_ETRANXY_mosaic,                                                   &
+                                   ACC_ETRANXY_mosaic,ACC_ERRWATXY_MOSAIC,                                                   &
                                    use_wudapt_lcz,                                                       &
                                    TR_URB2D_mosaic,TB_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
                                    TG_URB2D_mosaic,TC_URB2D_mosaic,                                      & !H urban  Aaron A. Mosaic
