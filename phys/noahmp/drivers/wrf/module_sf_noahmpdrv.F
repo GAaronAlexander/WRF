@@ -4161,10 +4161,10 @@ END SUBROUTINE noahmp_urban
   REAL, DIMENSION( ims:ime, jms:jme) , OPTIONAL, INTENT(INOUT) :: Z0
 
 
-
   INTEGER :: ij, i,j,mosaic_i,LastSwap,NumPairs,soil_k, Temp2,Temp5,Temp7, ICE,temp_index
   REAL :: Temp, Temp3,Temp4,Temp6,xice_threshold,x
   INTEGER, DIMENSION(7) :: HUE_noahmp_extracatagories ! added by Aaron A.
+  INTEGER :: index_41, index_41_2, index_47, index_42, index_43, index_45, index_44, index_48, index_49, index_50
   INTEGER :: LC, CAT_interested, temp_master_index
   REAL :: temp_master_LUF
   LOGICAL :: IPRINT
@@ -4414,6 +4414,8 @@ END SUBROUTINE noahmp_urban
             index_44 = -1
             index_48 = -1
             index_49 = -1
+            index_41_2 = -1
+            index_50 = -1
 
             ! first find the locations of the indexes
             DO  mosaic_i=1, NLCAT
@@ -4463,25 +4465,64 @@ END SUBROUTINE noahmp_urban
 
                   end if
 
- !               else !make sure that if HUE is active but not all of the new 
- !                   if ((LANDUSEF2(i,index_41,j).eq.0.)) then
- !                        temp_master_index = mosaic_cat_index(i,index_41,j)
- !                        mosaic_cat_index(i,index_41:NLCAT-1,j) = mosaic_cat_index(i,index_41+1:NLCAT,j)
- !                       mosaic_cat_index(i,NLCAT,j) = temp_master_index
 
-  !                      temp_master_LUF = LANDUSEF2(i,index_41,j)
-  !                      LANDUSEF2(i,index_41:NLCAT-1,j) = LANDUSEF2(i,index_41+1:NLCAT,j)
-  !                      LANDUSEF2(i,NLCAT,j) = temp_master_LUF
-
-   !                 else if  ((LANDUSEF2(i,index_47,j).eq.0.)) then
-   !                      temp_master_index = mosaic_cat_index(i,index_41,j)
-   !                      mosaic_cat_index(i,index_41:NLCAT-1,j) = mosaic_cat_index(i,index_41+1:NLCAT,j)
-   !                     mosaic_cat_index(i,NLCAT,j) = temp_master_index
-
-   !
-   !                 endif
-    !        end if
         end if ! end the urban tree loop
+
+          ! first find the locations of the indexes
+            DO  mosaic_i=1, NLCAT
+              ! first reorganizing 41 (again) and 50
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.41) THEN
+                index_41_2 = mosaic_i
+
+              elseif (mosaic_cat_index(i,mosaic_i,j).eq.50) then
+                index_50 = mosaic_i
+
+              ENDIF
+            ENDDO
+
+            ! check to see if these are still negavitve. If they aren't, we can
+            ! re-organize
+
+            if ((index_41_2.gt.0).and.(index_50.gt.0) ) then !we can reorganize
+!              if ((LANDUSEF2(i,index_41,j).gt.0.).and.(LANDUSEF2(i,index_47,j).gt.0.)) THEN
+
+                  if ( index_41_2.lt.index_50 ) then !means that we are 41.....50, move together and flip 
+                  !so we need to move and then swap
+
+                    temp_master_index= mosaic_cat_index(i,index_50,j)
+                    mosaic_cat_index(i,index_41_2+2:index_50,j) = mosaic_cat_index(i,index_41_2+1:index_50-1,j)
+                    mosaic_cat_index(i,index_41_2+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_50,j)
+                    LANDUSEF2(i,index_41_2+2:index_50,j) = LANDUSEF2(i,index_41_2+1:index_50-1,j)
+                    LANDUSEF2(i,index_41_2+1,j) = temp_master_LUF
+
+                    ! now swap so it goes 50 41 instead of 41 50
+                    temp_master_index = mosaic_cat_index(i,index_50,j)
+                    mosaic_cat_index(i,index_50,j) = mosaic_cat_index(i,index_50+1,j)
+                    mosaic_cat_index(i,index_50+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_50,j)
+                    LANDUSEF2(i,index_50,j) = LANDUSEF2(i,index_50+1,j)
+                    LANDUSEF2(i,index_50+1,j) = temp_master_LUF
+                  ELSE !This means we are ordered 50 .... 41, so we need to move and then swap
+
+                    temp_master_index = mosaic_cat_index(i,index_41_2,j)
+                    mosaic_cat_index(i,index_50+2:index_41_2,j) = mosaic_cat_index(i,index_50+1:index_41_2-1,j)
+                    mosaic_cat_index(i,index_50+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_41_2,j)
+                    LANDUSEF2(i,index_50+2:index_41_2,j) = LANDUSEF2(i,index_50+1:index_41_2-1,j)
+                    LANDUSEF2(i,index_50+1,j) = temp_master_LUF
+                    ! now swap so it goes 41 47 instead of 47 41
+
+                  end if
+
+
+        end if ! end the urban tree loop
+
+
+        
 
       ! repeat process because index locations of 42 and 43 may have changed!
 
@@ -6440,7 +6481,8 @@ type(noahmp_parameters) :: parameters
                !turfgrass. NOTE: ONLY for NLCD Aaron A. 
                ! also now 
                TURFGRASS_URB = 0
-               if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or.(IVGTYP(I,J).EQ.45).or.(IVGTYP(I,J).EQ.48)) THEN ! currently hardcoded for NLCD
+               if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or. & 
+               (IVGTYP(I,J).EQ.45).or.(IVGTYP(I,J).EQ.48).or.(IVGTYP(I,J).EQ.50)) THEN ! currently hardcoded for NLCD
 
                        DO LAYER=1,mosaic_cat
                                 if ((mosaic_cat_index(I,LAYER,J).EQ.26).or.(mosaic_cat_index(I,LAYER,J).EQ.24).or.(mosaic_cat_index(I,LAYER,J).EQ.25)) THEN 
@@ -6699,6 +6741,9 @@ type(noahmp_parameters) :: parameters
                ! Turf grass flux runon
                IF( (VEGTYP.EQ.43).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.49)) THEN ! Aaron Added
                  VOL_FLUX_RUNON = VOL_FLUX_RUNONXY_mosaic(I,mosaic_i-1,J) ! you want the previous one
+               ELSE IF ( (VEGTYP.EQ.50)) THEN
+                   VOL_FLUX_RUNON = VOL_FLUX_RUNONXY_mosaic(I,mosaic_i-2,J) ! you want the one that is 
+                   ! was called two times ago
                ELSE
                  VOL_FLUX_RUNON = 0.
                END IF
@@ -7917,8 +7962,8 @@ type(noahmp_parameters) :: parameters
                IF( (SF_URBAN_PHYSICS == 0).and.( (IVGTYP(I,J) == ISURBAN_TABLE) .or.( IVGTYP(I,J) == LCZ_1_TABLE) .or. (IVGTYP(I,J) == LCZ_2_TABLE) .or. &
                 (IVGTYP(I,J) == LCZ_3_TABLE) .or. (IVGTYP(I,J) == 42) .or. (IVGTYP(I,J) == 44) .or. &
 
-                (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16) .or. 
-                (IVGTYP(I,J) == 48))) THEN
+                (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16) .or. &
+                (IVGTYP(I,J) == 48) .or. (IVGTYP(I,J) == 50 ))) THEN
 
                 FAREA2 = 0.0 !This is a fix to change how the urban areas/barren areas
                 ! We are only going to be outputting the average of the vegetated area.
@@ -8147,7 +8192,8 @@ type(noahmp_parameters) :: parameters
 
             IF((mosaic_cat_index(I,mosaic_i,J) /= ISURBAN_TABLE) .and.( mosaic_cat_index(I,mosaic_i,J) /= LCZ_1_TABLE) .and. &
                    (mosaic_cat_index(I,mosaic_i,J) /= LCZ_2_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= LCZ_3_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 42) .and. &
-                   (mosaic_cat_index(I,mosaic_i,J) /= 44) .and. (mosaic_cat_index(I,mosaic_i,J) /= 45).and. (mosaic_cat_index(I,mosaic_i,J) /= ISBARREN_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 16)  ) THEN
+                   (mosaic_cat_index(I,mosaic_i,J) /= 44) .and. (mosaic_cat_index(I,mosaic_i,J) /= 45).and. &(mosaic_cat_index(I,mosaic_i,J) /= ISBARREN_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 16) .and. &
+                   (mosaic_cat_index(I,mosaic_i,J) /= 48) .and. (mosaic_cat_index(I,mosaic_i,J) /= 50) ) THEN
 
                   FAREA2 = FAREA2 + landusef2(I,mosaic_i,J)
 
