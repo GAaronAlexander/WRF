@@ -639,6 +639,7 @@ CONTAINS
     REAL,    DIMENSION( 1:nsoil)  ::  SMC_intermediate     ! volumetric soil moisture [m3/m3]
     REAL,    DIMENSION( 1:nsoil)  ::  SH2O_intermediate      ! volumetric liquid soil moisture [m3/m3]
     INTEGER                       :: TURFGRASS_URB
+
     REAL                          :: ACC_ERRWAT
     REAL ,   DIMENSION( 1:NSOIL)  :: BTRANI_dummy
     REAL                          :: RUNONSRF
@@ -1235,6 +1236,7 @@ CONTAINS
             RAININ  , SNOWIN  , ACC_SSOIL, ACC_QINSUR, ACC_QSEVA      , & ! OUT :
             ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
             ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR         & ! INOUT
+
             ,SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
                 DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
 #ifdef WRF_HYDRO
@@ -1708,6 +1710,19 @@ IF(VEGTYPE.EQ.44) THEN !Permeable Pavement Added by Aaron A.
       parameters%SMCWLT(isoil) = 0.1
 
     end do
+ELSE IF(VEGTYPE.EQ.49) THEN  !Bioswale added by Aaron A.
+    do isoil = 1, size(soiltype)
+      parameters%BEXP(isoil)   = 3.621
+      parameters%DKSAT(isoil)  = 8.207E-05
+      parameters%DWSAT(isoil)  = 1.132E-06
+      parameters%PSISAT(isoil) = 0.0240
+      parameters%QUARTZ(isoil) = QUARTZ_TABLE (SOILTYPE(isoil))
+      parameters%SMCDRY(isoil) = 0.02
+      parameters%SMCMAX(isoil) = 0.5
+      parameters%SMCREF(isoil) = 0.335
+      parameters%SMCWLT(isoil) = 0.1
+    end do
+    
 ELSE
     do isoil = 1, size(soiltype)
       parameters%BEXP(isoil)   = BEXP_TABLE   (SOILTYPE(isoil))
@@ -4146,10 +4161,10 @@ END SUBROUTINE noahmp_urban
   REAL, DIMENSION( ims:ime, jms:jme) , OPTIONAL, INTENT(INOUT) :: Z0
 
 
-
   INTEGER :: ij, i,j,mosaic_i,LastSwap,NumPairs,soil_k, Temp2,Temp5,Temp7, ICE,temp_index
   REAL :: Temp, Temp3,Temp4,Temp6,xice_threshold,x
   INTEGER, DIMENSION(7) :: HUE_noahmp_extracatagories ! added by Aaron A.
+  INTEGER :: index_41, index_41_2, index_47, index_42, index_43, index_45, index_44, index_48, index_49, index_50
   INTEGER :: LC, CAT_interested, temp_master_index
   REAL :: temp_master_LUF
   LOGICAL :: IPRINT
@@ -4397,6 +4412,10 @@ END SUBROUTINE noahmp_urban
             index_43 = -1
             index_45 = -1
             index_44 = -1
+            index_48 = -1
+            index_49 = -1
+            index_41_2 = -1
+            index_50 = -1
 
             ! first find the locations of the indexes
             DO  mosaic_i=1, NLCAT
@@ -4414,7 +4433,7 @@ END SUBROUTINE noahmp_urban
             ! re-organize
 
             if ((index_41.gt.0).and.(index_47.gt.0) ) then !we can reorganize
-!              if ((LANDUSEF2(i,index_41,j).gt.0.).and.(LANDUSEF2(i,index_47,j).gt.0.)) THEN
+              if ((LANDUSEF2(i,index_41,j).gt.0.).and.(LANDUSEF2(i,index_47,j).gt.0.)) THEN
 
                   if ( index_41.lt.index_47 ) then !means that we are 41.....47, move together
 
@@ -4446,25 +4465,32 @@ END SUBROUTINE noahmp_urban
 
                   end if
 
- !               else !make sure that if HUE is active but not all of the new 
- !                   if ((LANDUSEF2(i,index_41,j).eq.0.)) then
- !                        temp_master_index = mosaic_cat_index(i,index_41,j)
- !                        mosaic_cat_index(i,index_41:NLCAT-1,j) = mosaic_cat_index(i,index_41+1:NLCAT,j)
- !                       mosaic_cat_index(i,NLCAT,j) = temp_master_index
+        else !make sure that if HUE is active but not all of the new 
+            if ((LANDUSEF2(i,index_47,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_47,j)
+                 mosaic_cat_index(i,index_47:NLCAT-1,j) = mosaic_cat_index(i,index_47+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
 
-  !                      temp_master_LUF = LANDUSEF2(i,index_41,j)
-  !                      LANDUSEF2(i,index_41:NLCAT-1,j) = LANDUSEF2(i,index_41+1:NLCAT,j)
-  !                      LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+                temp_master_LUF = LANDUSEF2(i,index_47,j)
+                LANDUSEF2(i,index_47:NLCAT-1,j) = LANDUSEF2(i,index_47+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
 
-   !                 else if  ((LANDUSEF2(i,index_47,j).eq.0.)) then
-   !                      temp_master_index = mosaic_cat_index(i,index_41,j)
-   !                      mosaic_cat_index(i,index_41:NLCAT-1,j) = mosaic_cat_index(i,index_41+1:NLCAT,j)
-   !                     mosaic_cat_index(i,NLCAT,j) = temp_master_index
+            else if  ((LANDUSEF2(i,index_41,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_41,j)
+                 mosaic_cat_index(i,index_41:NLCAT-1,j) = mosaic_cat_index(i,index_41+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
 
-   !
-   !                 endif
-    !        end if
+                temp_master_LUF = LANDUSEF2(i,index_41,j)
+                LANDUSEF2(i,index_41:NLCAT-1,j) = LANDUSEF2(i,index_41+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+            endif
+
         end if ! end the urban tree loop
+        end if 
+
+        
+         
+        
 
       ! repeat process because index locations of 42 and 43 may have changed!
 
@@ -4618,6 +4644,159 @@ END SUBROUTINE noahmp_urban
             end if
           end if ! end urban to permeable pavements
 
+     ! repeat process for index locations of 48 and 49 
+
+             ! first find the locations of the indexes for 48 and 49
+          DO  mosaic_i=1, NLCAT
+          ! first reorganizing 42 and 43
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.48) THEN
+                index_48 = mosaic_i
+
+              elseif (mosaic_cat_index(i,mosaic_i,j).eq.49) then
+                index_49 = mosaic_i
+
+              ENDIF
+            ENDDO
+
+          ! check to see if these are still negavitve. If they aren't, we can
+          ! re-organize
+
+          if ((index_48.gt.0).and.(index_49.gt.0) ) then !we can reorganize
+
+           if ((LANDUSEF2(i,index_48,j).gt.0.).and.(LANDUSEF2(i,index_49,j).gt.0.)) THEN
+
+                if ( index_48.lt.index_49) then !means that we are 48.....49, move together
+
+                  temp_master_index= mosaic_cat_index(i,index_49,j)
+                  mosaic_cat_index(i,index_48+2:index_49,j) = mosaic_cat_index(i,index_48+1:index_49-1,j)
+                  mosaic_cat_index(i,index_48+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_49,j)
+                  LANDUSEF2(i,index_48+2:index_49,j) = LANDUSEF2(i,index_48+1:index_49-1,j)
+                  LANDUSEF2(i,index_48+1,j) = temp_master_LUF
+
+                ELSE !This means we are ordered 49 .... 48, so we need to move and then swap
+
+                  temp_master_index = mosaic_cat_index(i,index_48,j)
+                  mosaic_cat_index(i,index_49+2:index_48,j) = mosaic_cat_index(i,index_49+1:index_48-1,j)
+                  mosaic_cat_index(i,index_49+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_48,j)
+                  LANDUSEF2(i,index_49+2:index_48,j) = LANDUSEF2(i,index_49+1:index_48-1,j)
+                  LANDUSEF2(i,index_49+1,j) = temp_master_LUF
+
+                  ! now swap so it goes 48 49 instead of 49 48
+
+
+                  temp_master_index = mosaic_cat_index(i,index_49,j)
+                  mosaic_cat_index(i,index_49,j) = mosaic_cat_index(i,index_49+1,j)
+                  mosaic_cat_index(i,index_49+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_49,j)
+                  LANDUSEF2(i,index_49,j) = LANDUSEF2(i,index_49+1,j)
+                  LANDUSEF2(i,index_49+1,j) = temp_master_LUF
+
+                end if
+
+         else !make sure that if HUE is active but not all of the new 
+            if ((LANDUSEF2(i,index_49,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_49,j)
+                 mosaic_cat_index(i,index_49:NLCAT-1,j) = mosaic_cat_index(i,index_49+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+                temp_master_LUF = LANDUSEF2(i,index_49,j)
+                LANDUSEF2(i,index_49:NLCAT-1,j) = LANDUSEF2(i,index_49+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+
+            else if  ((LANDUSEF2(i,index_48,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_48,j)
+                 mosaic_cat_index(i,index_48:NLCAT-1,j) = mosaic_cat_index(i,index_48+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+                temp_master_LUF = LANDUSEF2(i,index_48,j)
+                LANDUSEF2(i,index_48:NLCAT-1,j) = LANDUSEF2(i,index_48+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+            endif
+        end if
+      end if ! end urban to permeable pavements
+
+
+
+
+       ! first find the locations of the indexes
+            DO  mosaic_i=1, NLCAT
+              ! first reorganizing 41 (again) and 50
+              IF (mosaic_cat_index(i,mosaic_i,j).eq.41) THEN
+                index_41_2 = mosaic_i
+
+              elseif (mosaic_cat_index(i,mosaic_i,j).eq.50) then
+                index_50 = mosaic_i
+
+              ENDIF
+            ENDDO
+
+            ! check to see if these are still negavitve. If they aren't, we can
+            ! re-organize
+
+            if ((index_41_2.gt.0).and.(index_50.gt.0) ) then !we can reorganize
+             if ((LANDUSEF2(i,index_41_2,j).gt.0.).and.(LANDUSEF2(i,index_50,j).gt.0.)) THEN
+
+                  if ( index_41_2.lt.index_50 ) then !means that we are 41.....50, move together and flip 
+                  !so we need to move and then swap
+
+                    temp_master_index= mosaic_cat_index(i,index_50,j)
+                    mosaic_cat_index(i,index_41_2+2:index_50,j) = mosaic_cat_index(i,index_41_2+1:index_50-1,j)
+                    mosaic_cat_index(i,index_41_2+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_50,j)
+                    LANDUSEF2(i,index_41_2+2:index_50,j) = LANDUSEF2(i,index_41_2+1:index_50-1,j)
+                    LANDUSEF2(i,index_41_2+1,j) = temp_master_LUF
+
+                    ! now swap so it goes 50 41 instead of 41 50
+                    temp_master_index = mosaic_cat_index(i,index_41_2,j)
+                    mosaic_cat_index(i,index_41_2,j) = mosaic_cat_index(i,index_41_2+1,j)
+                    mosaic_cat_index(i,index_41_2+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_41_2,j)
+                    LANDUSEF2(i,index_41_2,j) = LANDUSEF2(i,index_41_2+1,j)
+                    LANDUSEF2(i,index_41_2+1,j) = temp_master_LUF
+                  ELSE !This means we are ordered 50 .... 41, so we need to move and then swap
+
+                    temp_master_index = mosaic_cat_index(i,index_50,j)
+                    mosaic_cat_index(i,index_50+2:index_41_2,j) = mosaic_cat_index(i,index_50+1:index_41_2-1,j)
+                    mosaic_cat_index(i,index_50+1,j) = temp_master_index
+
+                    temp_master_LUF = LANDUSEF2(i,index_50,j)
+                    LANDUSEF2(i,index_50+2:index_41_2,j) = LANDUSEF2(i,index_50+1:index_41_2-1,j)
+                    LANDUSEF2(i,index_50+1,j) = temp_master_LUF
+                    
+
+                  end if
+
+
+       !else !make sure that if HUE is active but not all of the new 
+       !     if ((LANDUSEF2(i,index_50,j).eq.0.)) then
+       !          temp_master_index = mosaic_cat_index(i,index_50,j)
+       !          mosaic_cat_index(i,index_50:NLCAT-1,j) = mosaic_cat_index(i,index_50+1:NLCAT,j)
+       !         mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+       !         temp_master_LUF = LANDUSEF2(i,index_50,j)
+       !         LANDUSEF2(i,index_50:NLCAT-1,j) = LANDUSEF2(i,index_50+1:NLCAT,j)
+       !         LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+
+        !    else if  ((LANDUSEF2(i,index_41_2,j).eq.0.)) then
+        !         temp_master_index = mosaic_cat_index(i,index_41_2,j)
+        !         mosaic_cat_index(i,index_41_2:NLCAT-1,j) = mosaic_cat_index(i,index_41_2+1:NLCAT,j)
+        !        mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+        !        temp_master_LUF = LANDUSEF2(i,index_41_2,j)
+        !        LANDUSEF2(i,index_41_2:NLCAT-1,j) = LANDUSEF2(i,index_41_2+1:NLCAT,j)
+        !        LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+        !    endif
+
+        end if ! end the urban tree loop
+        end if 
+
 
 
       ENDDO
@@ -4739,6 +4918,7 @@ IF(.not.restart)THEN !! only do these if this is a restart, otherwise,we have
             fastcpxy_mosaic(i,mosaic_i,j)=fastcpxy(i,j)
             xsaixy_mosaic(i,mosaic_i,j)=xsaixy(i,j)
             lai_mosaic(i,mosaic_i,j)=lai(i,j)
+
 
 
              DO soil_k=1,num_soil_layers
@@ -5851,9 +6031,11 @@ type(noahmp_parameters) :: parameters
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evbxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghvxy_mosaic
        REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ghbxy_mosaic
-       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irgxy_mosaic
-       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ircxy_mosaic
-       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irbxy_mosaic
+
+      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irgxy_mosaic
+      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: ircxy_mosaic
+      !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: irbxy_mosaic
+
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: trxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: evcxy_mosaic
       !REAL, DIMENSION( ims:ime, 1:mosaic_cat, jms:jme ) , OPTIONAL, INTENT(INOUT):: chleafxy_mosaic
@@ -6150,6 +6332,7 @@ type(noahmp_parameters) :: parameters
 
 
                IVGTYP_dominant(I,J)=IVGTYP(I,J)                            ! SAVE THE DOMINANT Vegitation
+               !WRITE(*,*) 'I', I , 'J', J
 
 
                ! INITIALIZE THE AREA-AVERAGED variables (all average variables thtat I added)
@@ -6334,7 +6517,7 @@ type(noahmp_parameters) :: parameters
                RUNONSFXY_mosaic_avg(i,j) = 0
 
                ! These are needed for the
-
+                
                MOSAIC_LOOP : DO mosaic_i =1, mosaic_cat !looping from the nth mosaic catagory to the largest mosaic catagory
 
                ! We need to move from our 3D data to the 2D data sets
@@ -6344,8 +6527,11 @@ type(noahmp_parameters) :: parameters
                !permeable pavement, then  adopt largest urban
                !params to route to (only works for the slab model)
                !turfgrass. NOTE: ONLY for NLCD Aaron A. 
+               ! also now 
                TURFGRASS_URB = 0
-               if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or.(IVGTYP(I,J).EQ.45)) THEN ! currently hardcoded for NLCD
+               if ((IVGTYP(I,J).EQ.41).or.(IVGTYP(I,J).EQ.42).or.(IVGTYP(I,J).EQ.44).or. & 
+               (IVGTYP(I,J).EQ.45).or.(IVGTYP(I,J).EQ.48).or.(IVGTYP(I,J).EQ.50)) THEN ! currently hardcoded for NLCD
+
                        DO LAYER=1,mosaic_cat
                                 if ((mosaic_cat_index(I,LAYER,J).EQ.26).or.(mosaic_cat_index(I,LAYER,J).EQ.24).or.(mosaic_cat_index(I,LAYER,J).EQ.25)) THEN 
                                         TURFGRASS_URB=mosaic_cat_index(I,LAYER,J)
@@ -6601,8 +6787,11 @@ type(noahmp_parameters) :: parameters
                END IF
 
                ! Turf grass flux runon
-               IF( (VEGTYP.EQ.43).OR.(VEGTYP.EQ.44)) THEN
+               IF( (VEGTYP.EQ.43).OR.(VEGTYP.EQ.44).OR.(VEGTYP.EQ.49)) THEN ! Aaron Added
                  VOL_FLUX_RUNON = VOL_FLUX_RUNONXY_mosaic(I,mosaic_i-1,J) ! you want the previous one
+               ELSE IF ( (VEGTYP.EQ.47)) THEN
+                   VOL_FLUX_RUNON = VOL_FLUX_RUNONXY_mosaic(I,mosaic_i-2,J) ! you want the one that is 
+                   ! was called two times ago
                ELSE
                  VOL_FLUX_RUNON = 0.
                END IF
@@ -6964,7 +7153,7 @@ type(noahmp_parameters) :: parameters
               RUNSF  = RUNSF * dt
               RUNSB  = RUNSB * dt
          ELSE
-                 
+             
               ICE=0                              ! Neither sea ice or land ice.
               CALL NOAHMP_SFLX (parameters, &
                  I       , J       , LAT     , YEARLEN , JULIAN  , COSZ    , & ! IN : Time/Space-related
@@ -7011,6 +7200,7 @@ type(noahmp_parameters) :: parameters
                  ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR       , & ! INOUT
                  SMC_INTERMEDIATE, SH2O_INTERMEDIATE, TURFGRASS_URB, BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
                 DETENTION_STORAGE,FAREAXY,VOL_FLUX_SM,VOL_FLUX_RUNON,ACC_ERRWAT &
+
 #ifdef WRF_HYDRO
                  , sfcheadrt(i,j), WATBLED                                   &
 #endif
@@ -7627,7 +7817,7 @@ type(noahmp_parameters) :: parameters
               Z0_mosaic(I,mosaic_i,J) = Z0(I,J)
               ZNT_mosaic(I,mosaic_i,J) = ZNT(I,J)
               rs_mosaic(I,mosaic_i,J) = RS(I,J)
-
+              
               !These are the soil variables
                       DO LAYER=1,NSOIL
 
@@ -7709,9 +7899,11 @@ type(noahmp_parameters) :: parameters
               ! evbxy_mosaic(I,mosaic_i,J) = EVBXY(I,J)
                 ghvxy_mosaic(I,mosaic_i,J) = GHVXY(I,J)
                 ghbxy_mosaic(I,mosaic_i,J) = GHBXY(I,J)
-              !  irgxy_mosaic(I,mosaic_i,J) = IRGXY(I,J)
-              !  ircxy_mosaic(I,mosaic_i,J) = IRCXY(I,J)
-              !  irbxy_mosaic(I,mosaic_i,J) = IRBXY(I,J)
+                
+              ! irgxy_mosaic(I,mosaic_i,J) = IRGXY(I,J)
+              ! ircxy_mosaic(I,mosaic_i,J) = IRCXY(I,J)
+              ! irbxy_mosaic(I,mosaic_i,J) = IRBXY(I,J)
+
               ! trxy_mosaic(I,mosaic_i,J) = TRXY(I,J)
               ! evcxy_mosaic(I,mosaic_i,J) = EVCXY(I,J)
               ! chleafxy_mosaic(I,mosaic_i,J) = CHLEAFXY(I,J)
@@ -7759,11 +7951,12 @@ type(noahmp_parameters) :: parameters
                   ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY_mosaic(I,mosaic_i,J) + ACC_EDIRXY(I,J)
                   ACC_ERRWATXY_mosaic(I,mosaic_i,J) = ACC_ERRWATXY_mosaic(I,mosaic_i,J) + ACC_ERRWAT 
               else
-                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =   ACC_DWATERXY(I,J)
-                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY(I,J)
-                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY(I,J)
-                  ACC_ETRANXY_mosaic(I,mosaic_i,J) =  ACC_ETRANXY(I,J)
-                  ACC_EDIRXY_mosaic(I,mosaic_i,J) =  ACC_EDIRXY(I,J)
+                  ACC_DWATERXY_mosaic(I,mosaic_i,J) =  ACC_DWATERXY_mosaic(I,mosaic_i,J) + ACC_DWATERXY(I,J)
+                  ACC_PRCPXY_mosaic(I,mosaic_i,J) = ACC_PRCPXY_mosaic(I,mosaic_i,J) + ACC_PRCPXY(I,J)
+                  ACC_ECANXY_mosaic(I,mosaic_i,J) = ACC_ECANXY_mosaic(I,mosaic_i,J) + ACC_ECANXY(I,J)
+                  ACC_ETRANXY_mosaic(I,mosaic_i,J) = ACC_ETRANXY_mosaic(I,mosaic_i,J) + ACC_ETRANXY(I,J)
+                  ACC_EDIRXY_mosaic(I,mosaic_i,J) = ACC_EDIRXY_mosaic(I,mosaic_i,J) + ACC_EDIRXY(I,J)
+                  ACC_ERRWATXY_mosaic(I,mosaic_i,J) = ACC_ERRWATXY_mosaic(I,mosaic_i,J) + ACC_ERRWAT 
               endif
 
               ! Irrigation variables that are needed
@@ -7811,13 +8004,16 @@ type(noahmp_parameters) :: parameters
               !-------------------------------------------------------------------
               !We now do Grid Averaging!!!!
               !-------------------------------------------------------------------
-
+             
               FAREA = landusef2(I,mosaic_i,J) !This logical option is going to be used multiply
               FAREA2 = landusef2(I,mosaic_i,J)
 
                IF( (SF_URBAN_PHYSICS == 0).and.( (IVGTYP(I,J) == ISURBAN_TABLE) .or.( IVGTYP(I,J) == LCZ_1_TABLE) .or. (IVGTYP(I,J) == LCZ_2_TABLE) .or. &
                 (IVGTYP(I,J) == LCZ_3_TABLE) .or. (IVGTYP(I,J) == 42) .or. (IVGTYP(I,J) == 44) .or. &
-                (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16))) THEN
+
+                (IVGTYP(I,J) == 45) .or. (IVGTYP(I,J) == ISBARREN_TABLE) .or. (IVGTYP(I,J) == 16) .or. &
+                (IVGTYP(I,J) == 48) .or. (IVGTYP(I,J) == 50 ))) THEN
+
                 FAREA2 = 0.0 !This is a fix to change how the urban areas/barren areas
                 ! We are only going to be outputting the average of the vegetated area.
         ENDIF
@@ -8044,8 +8240,10 @@ type(noahmp_parameters) :: parameters
         IF(SF_URBAN_PHYSICS == 0) THEN
 
             IF((mosaic_cat_index(I,mosaic_i,J) /= ISURBAN_TABLE) .and.( mosaic_cat_index(I,mosaic_i,J) /= LCZ_1_TABLE) .and. &
-                   (mosaic_cat_index(I,mosaic_i,J) /= LCZ_2_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= LCZ_3_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 42) .and. &
-                   (mosaic_cat_index(I,mosaic_i,J) /= 44) .and. (mosaic_cat_index(I,mosaic_i,J) /= 45).and. (mosaic_cat_index(I,mosaic_i,J) /= ISBARREN_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 16)  ) THEN
+                   (mosaic_cat_index(I,mosaic_i,J) /= LCZ_2_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= LCZ_3_TABLE) .and.(mosaic_cat_index(I,mosaic_i,J) /= 42) .and. &
+                   (mosaic_cat_index(I,mosaic_i,J) /= 44) .and. (mosaic_cat_index(I,mosaic_i,J) /= 45) .and. & 
+                   (mosaic_cat_index(I,mosaic_i,J) /= ISBARREN_TABLE) .and. (mosaic_cat_index(I,mosaic_i,J) /= 16) .and. &
+                   (mosaic_cat_index(I,mosaic_i,J) /= 48) .and. (mosaic_cat_index(I,mosaic_i,J) /= 50)) THEN
 
                   FAREA2 = FAREA2 + landusef2(I,mosaic_i,J)
 
@@ -8356,6 +8554,7 @@ type(noahmp_parameters) :: parameters
               !HUE THINGS
               RUNONSFXY(I,J) = RUNONSFXY_mosaic_avg(I,J)
 
+            !write(*,*) 'ZNT', ZNT(I,J), I, J
             ENDIF ! End of the Soil-Water_ice If else statement
 
            ENDDO ILOOP !END of the I LOOP

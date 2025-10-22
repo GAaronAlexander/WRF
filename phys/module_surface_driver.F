@@ -3291,7 +3291,6 @@ if (IOPT_MOS.eq.1) THEN !mosaic check
                                    ghbxy_mosaic, tgvxy_mosaic, tgbxy_mosaic, &
                                    MP_RAINC = RAINCV, MP_RAINNC = RAINNCV, MP_SHCV = RAINSHV, MP_SNOW = SNOWNCV, MP_GRAUP = GRAUPELNCV, MP_HAIL = HAILNCV)! HUE SPECIFIC VARIABLES
                                
-
                                
                                ELSE
                                  CALL wrf_error_fatal('Lacking arguments for NOAHMPLSM Mosaic in surface driver')
