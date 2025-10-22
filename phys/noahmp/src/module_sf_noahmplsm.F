@@ -498,7 +498,7 @@ contains
                    ACC_ETRANI, HCPCT , EFLXB   , CANHS   ,                     & ! OUT :
                    ACC_DWATER, ACC_PRCP, ACC_ECAN, ACC_ETRAN, ACC_EDIR,         & ! INOUT
                    SMC_dummy, SH2O_dummy, TURFGRASS_URB,BTRANI_dummy, RUNONSRF, NSOIL_GR,                  & ! addtiional variables for HUE added by Aaron A.
-                   DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON &
+                   DETENTION_STORAGE,FAREA,VOL_FLUX_SM,VOL_FLUX_RUNON, ACC_ERRWAT &
 
 #ifdef WRF_HYDRO
                    ,SFCHEADRT, WATBLED                                         & ! IN/OUT :
@@ -1173,14 +1173,20 @@ END IF ! end the HUE change to the water balance
                  RUNONSRF, VEGTYP, GREEN_ROOF,NSOIL_GR,DETENTION_STORAGE,FAREA, &
                  SMC_dummy,ETRAN2,ACC_ERRWAT)   !in ( Except ERRWAT, which is out )
 
-  ! These are for the urban to turfgrass and urban to permeable pavement
+  ! These are for turfgrass and permeable pavement
   IF (OPT_HUE.eq.1) THEN
    IF (VEGTYP.EQ.43) RUNONSRF = 0. !added by aaron A. Zero out Runon
    IF (VEGTYP.EQ.43) VOL_FLUX_RUNON = 0. ! Zero out the flux volume
+   
    IF (VEGTYP.EQ.44) VOL_FLUX_RUNON = 0. ! Zer out the flux volume
    IF (VEGTYP.EQ.44) RUNONSRF = 0. !aaron A. Zero out runon so it doesnt blead over to other land use types
-   IF (VEGTYP.EQ.48) RUNONSRF = 0. ! aaron a. zero out runon 
-   IF (VEGTYP.EQ.50) RUNONSRF = 0. ! aaron a. zero out runon
+   
+   IF (VEGTYP.EQ.47) RUNONSRF = 0. ! aaron a. zero out runon 
+   IF (VEGTYP.EQ.47) VOL_FLUX_RUNON = 0. ! Zer out the flux volume
+   
+   IF (VEGTYP.EQ.49) RUNONSRF = 0. ! aaron a. zero out runon
+   IF (VEGTYP.EQ.49) VOL_FLUX_RUNON = 0. ! Zer out the flux volume
+   
   END IF
 
 ! urban - jref
@@ -2499,7 +2505,7 @@ END_WB = 0.0
       IF ((parameters%urban_flag .and. SNOWH == 0. ).or.(VEGTYP.eq.42 .and. SNOWH.eq.0).or. &
       (VEGTYP.eq.44 .and. SNOWH.eq.0).or.(VEGTYP.eq.41 .and. SNOWH.eq.0) .or. &
       (VEGTYP.eq.45 .and. SNOWH.eq.0) .or. (VEGTYP.eq.48 .and. SNOWH.eq.0) .or. & 
-      (VEGTYP.eq.50 .and. SNOWH.eq.0) THEN !modified by Aaron Alexander
+      (VEGTYP.eq.50 .and. SNOWH.eq.0)) THEN !modified by Aaron Alexander
          RSURF = 1.E6
       ENDIF
 
@@ -8465,7 +8471,7 @@ END IF ! Green BRANCH AARON A.
 
                ! make this more explicit I guess?
       IF (OPT_HUE.eq.1) THEN
-          IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45)) THEN
+          IF ((VEGTYP.eq.41).OR.(VEGTYP.eq.42).or.(VEGTYP.eq.45).or.(VEGTYP.eq.48).or.(VEGTYP.eq.50)) THEN
            RUNSRF = RUNSRF + PDDUM
            PDDUM = 0.
         endif 
