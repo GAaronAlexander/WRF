@@ -4492,6 +4492,9 @@ END SUBROUTINE noahmp_urban
          
         
 
+
+        
+
       ! repeat process because index locations of 42 and 43 may have changed!
 
             ! first find the locations of the indexes for 42 and 43
@@ -4798,6 +4801,73 @@ END SUBROUTINE noahmp_urban
         end if 
 
 
+              elseif (mosaic_cat_index(i,mosaic_i,j).eq.49) then
+                index_49 = mosaic_i
+
+              ENDIF
+            ENDDO
+
+          ! check to see if these are still negavitve. If they aren't, we can
+          ! re-organize
+
+          if ((index_48.gt.0).and.(index_49.gt.0) ) then !we can reorganize
+
+           if ((LANDUSEF2(i,index_48,j).gt.0.).and.(LANDUSEF2(i,index_49,j).gt.0.)) THEN
+
+                if ( index_48.lt.index_49) then !means that we are 48.....49, move together
+
+                  temp_master_index= mosaic_cat_index(i,index_49,j)
+                  mosaic_cat_index(i,index_48+2:index_49,j) = mosaic_cat_index(i,index_48+1:index_49-1,j)
+                  mosaic_cat_index(i,index_48+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_49,j)
+                  LANDUSEF2(i,index_48+2:index_49,j) = LANDUSEF2(i,index_48+1:index_49-1,j)
+                  LANDUSEF2(i,index_48+1,j) = temp_master_LUF
+
+                ELSE !This means we are ordered 49 .... 48, so we need to move and then swap
+
+                  temp_master_index = mosaic_cat_index(i,index_48,j)
+                  mosaic_cat_index(i,index_49+2:index_48,j) = mosaic_cat_index(i,index_49+1:index_48-1,j)
+                  mosaic_cat_index(i,index_49+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_48,j)
+                  LANDUSEF2(i,index_49+2:index_48,j) = LANDUSEF2(i,index_49+1:index_48-1,j)
+                  LANDUSEF2(i,index_49+1,j) = temp_master_LUF
+
+                  ! now swap so it goes 48 49 instead of 49 48
+
+
+                  temp_master_index = mosaic_cat_index(i,index_49,j)
+                  mosaic_cat_index(i,index_49,j) = mosaic_cat_index(i,index_49+1,j)
+                  mosaic_cat_index(i,index_49+1,j) = temp_master_index
+
+                  temp_master_LUF = LANDUSEF2(i,index_49,j)
+                  LANDUSEF2(i,index_49,j) = LANDUSEF2(i,index_49+1,j)
+                  LANDUSEF2(i,index_49+1,j) = temp_master_LUF
+
+                end if
+
+         else !make sure that if HUE is active but not all of the new 
+            if ((LANDUSEF2(i,index_49,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_49,j)
+                 mosaic_cat_index(i,index_49:NLCAT-1,j) = mosaic_cat_index(i,index_49+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+                temp_master_LUF = LANDUSEF2(i,index_49,j)
+                LANDUSEF2(i,index_49:NLCAT-1,j) = LANDUSEF2(i,index_49+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+
+            else if  ((LANDUSEF2(i,index_48,j).eq.0.)) then
+                 temp_master_index = mosaic_cat_index(i,index_48,j)
+                 mosaic_cat_index(i,index_48:NLCAT-1,j) = mosaic_cat_index(i,index_48+1:NLCAT,j)
+                mosaic_cat_index(i,NLCAT,j) = temp_master_index
+
+                temp_master_LUF = LANDUSEF2(i,index_48,j)
+                LANDUSEF2(i,index_48:NLCAT-1,j) = LANDUSEF2(i,index_48+1:NLCAT,j)
+                LANDUSEF2(i,NLCAT,j) = temp_master_LUF
+            endif
+        end if
+      end if ! end urban to permeable pavements
 
       ENDDO
       ENDDO

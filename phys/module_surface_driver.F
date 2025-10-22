@@ -175,7 +175,7 @@ CONTAINS
      &          ,pahxy_mosaic,canhsxy_mosaic,firaxy_mosaic,fsaxy_mosaic,shgxy_mosaic,shcxy_mosaic,shbxy_mosaic,ghvxy_mosaic,ghbxy_mosaic, tgvxy_mosaic, tgbxy_mosaic  &
 #endif                 
      &          ,runonsfxy,runonsfxy_mosaic, DETENTION_STORAGEXY,DETENTION_STORAGEXY_mosaic,VOL_FLUX_RUNONXY_mosaic                 &
-     &          ,VOL_FLUX_SMXY_mosaic, ACC_ERRWATXY_mosaic &
+     &          ,VOL_FLUX_SMXY_mosaic, &
 
      !~~~~~~~~~~~~~~~~~~~~~~~End Noah-MP HUE and Mosaic. Added by Aaron A.
      &          ,SDA_HFX, SDA_QFX, HFX_BOTH, QFX_BOTH, QNORM, fasdas,spp_lsm,pattern_spp_lsm,field_sf,spp_pbl,pattern_spp_pbl,XLAIDYN                     &
